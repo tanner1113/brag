@@ -1,0 +1,113 @@
+/* Brand values from the dickerson-motion RULES.md. No transitions or animations here: seek(t) moves everything. */
+@font-face {
+  font-family: 'Noto Sans Display';
+  src: url('fonts/NotoSansDisplay-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+}
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('fonts/NotoSans-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+}
+
+:root {
+  --bg: #111111;
+  --red: #AB1525;
+  --red-text: #D51E30;
+  --text: #FAFAFA;
+  --surface: #333333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); overflow: hidden; }
+
+#stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans', sans-serif;
+}
+#stage > * { position: absolute; }
+
+/* Photo band: every photo layer lives inside it, so nothing photographic reaches the header band. */
+.band { overflow: hidden; z-index: 1; }
+.band .layer, .band .clip, .band img, .band .divider, .band .tag, .band .dim { position: absolute; }
+.band img { max-width: none; }
+.band .clip { overflow: hidden; }
+.band .dim { background: var(--bg); }
+.fade-bottom { -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent); mask-image: linear-gradient(to bottom, #000 76%, transparent); }
+.fade-right { -webkit-mask-image: linear-gradient(to right, #000 78%, transparent); mask-image: linear-gradient(to right, #000 78%, transparent); }
+
+.divider { top: 0; bottom: 0; width: 6px; background: var(--text); }
+.tag {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 0.3em 0.6em;
+  background: var(--bg);
+  color: var(--text);
+  white-space: nowrap;
+}
+.tag.red { background: var(--red); }
+
+.lines, .sentence { z-index: 2; }
+.lines {
+  font-family: 'Noto Sans Display', sans-serif;
+  font-weight: 900;
+  font-stretch: 75%;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+}
+.sentence { font-weight: 700; letter-spacing: -0.005em; }
+.mask { overflow: hidden; white-space: nowrap; }
+.mask > span { display: inline-block; }
+.accent { color: var(--red-text); }
+
+.kicker {
+  z-index: 2;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 0.22em 0.55em;
+  background: var(--red);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.path {
+  z-index: 2;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--text);
+}
+.path .fill { position: absolute; inset: 0; background: var(--red); }
+.path span { position: relative; }
+
+.check-row { z-index: 2; display: flex; align-items: center; white-space: nowrap; }
+.check-row .cbox { position: relative; flex: none; background: var(--red); }
+.check-row .cbox svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.check-row .txt { font-weight: 700; white-space: pre; line-height: 1.1; }
+.check-row.caps .txt { text-transform: uppercase; letter-spacing: 0.02em; font-stretch: 87.5%; }
+
+.button {
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0 0.55em;
+  background: var(--red);
+  white-space: nowrap;
+}
+.button .book { font-weight: 700; letter-spacing: 0.1em; font-size: 0.5em; }
+.button .phone { font-family: 'Noto Sans Display', sans-serif; font-weight: 800; font-stretch: 87.5%; line-height: 1; }
+.url { z-index: 2; font-weight: 600; line-height: 1.2; }
+
+.wipe { z-index: 5; background: var(--red); }
+.badge, .logo-silver { z-index: 10; }
+.guide { z-index: 20; outline: 2px dashed #3ddc84; pointer-events: none; }
