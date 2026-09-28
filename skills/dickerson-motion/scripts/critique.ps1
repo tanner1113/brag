@@ -94,7 +94,7 @@ else { $cols = 5; $th = 180; $sh = 180 }
 # 1. Contact sheet at 2 fps.
 Remove-Item (Join-Path $Out 'contact_2fps_*.png') -ErrorAction SilentlyContinue
 Invoke-Tool 'ffmpeg' @('-v', 'error', '-y', '-i', $Video,
-  '-vf', "fps=2,scale=-2:${th},$(Stamp 16)tile=${cols}x5:padding=4:color=0x222222",
+  '-vf', "fps=2:round=up,scale=-2:${th},$(Stamp 16)tile=${cols}x5:padding=4:color=0x222222",
   (Join-Path $Out 'contact_2fps_%02d.png')) | Out-Null
 
 # 2. Frame strips around fast actions. Default: detected cuts at least 1 s apart (up to 8),
@@ -125,7 +125,7 @@ Invoke-Tool 'ffmpeg' @('-v', 'error', '-y', '-i', $Video, '-vf', 'scale=360:-2:f
   (Join-Path $Out 'phone_360.mp4')) | Out-Null
 Remove-Item (Join-Path $Out 'phone_360_*.png') -ErrorAction SilentlyContinue
 Invoke-Tool 'ffmpeg' @('-v', 'error', '-y', '-i', $Video,
-  '-vf', "fps=1,scale=360:-2:flags=area,$(Stamp 12)tile=6x2:padding=4:color=0x222222",
+  '-vf', "fps=1:round=up,scale=360:-2:flags=area,$(Stamp 12)tile=6x2:padding=4:color=0x222222",
   (Join-Path $Out 'phone_360_%02d.png')) | Out-Null
 
 # 4. Loop seam: last frame | first frame | 4x-amplified difference, SSIM, and audio level at both ends.

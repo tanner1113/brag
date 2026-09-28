@@ -66,10 +66,11 @@ if [ "$H" -gt "$W" ]; then cols=8 th=320 sh=360
 elif [ "$H" -eq "$W" ]; then cols=6 th=240 sh=270
 else cols=5 th=180 sh=180; fi
 
-# 1. Contact sheet at 2 fps.
+# 1. Contact sheet at 2 fps. round=up matters: fps keeps the last frame of each bucket, so the
+#    default rounding shows every tile 0.23 s later than its timestamp (0.48 s at 1 fps).
 rm -f "$out"/contact_2fps_*.png
 ffmpeg -v error -y -i "$video" \
-  -vf "fps=2,scale=-2:$th,$(stamp 16)tile=${cols}x5:padding=4:color=0x222222" "$out/contact_2fps_%02d.png"
+  -vf "fps=2:round=up,scale=-2:$th,$(stamp 16)tile=${cols}x5:padding=4:color=0x222222" "$out/contact_2fps_%02d.png"
 
 # 2. Frame strips around fast actions. Default: detected cuts at least 1 s apart (up to 8),
 #    or the quarter points if nothing cuts.
@@ -92,7 +93,7 @@ ffmpeg -v error -y -i "$video" -vf "scale=360:-2:flags=area" -c:v libx264 -prese
   -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart "$out/phone_360.mp4"
 rm -f "$out"/phone_360_*.png
 ffmpeg -v error -y -i "$video" \
-  -vf "fps=1,scale=360:-2:flags=area,$(stamp 12)tile=6x2:padding=4:color=0x222222" "$out/phone_360_%02d.png"
+  -vf "fps=1:round=up,scale=360:-2:flags=area,$(stamp 12)tile=6x2:padding=4:color=0x222222" "$out/phone_360_%02d.png"
 
 # 4. Loop seam: last frame | first frame | 4x-amplified difference, SSIM, and audio level at both ends.
 ffmpeg -v error -y -i "$video" -frames:v 1 "$out/first.png"

@@ -51,7 +51,7 @@ Every render is reviewed the way a harsh director would review it: scored, logge
 
 ```bash
 # 1. Contact sheet: 2 fps, timestamped, 8x5 tiles (6x5 for square, 5x5 for landscape)
-ffmpeg -i "$V" -vf "fps=2,scale=-2:320,drawtext=fontfile='$FONT':text='%{pts\:hms}':x=6:y=6:fontsize=16:fontcolor=yellow:box=1:boxcolor=black@0.6,tile=8x5:padding=4:color=0x222222" "$O/contact_2fps_%02d.png"
+ffmpeg -i "$V" -vf "fps=2:round=up,scale=-2:320,drawtext=fontfile='$FONT':text='%{pts\:hms}':x=6:y=6:fontsize=16:fontcolor=yellow:box=1:boxcolor=black@0.6,tile=8x5:padding=4:color=0x222222" "$O/contact_2fps_%02d.png"
 
 # 2. Frame strip: 8 consecutive frames starting 4 frames before t (here t = 8.15 s at 30 fps)
 ffmpeg -ss 8.000 -copyts -i "$V" -frames:v 1 -vf "select='lt(n\,8)',scale=-2:360,drawtext=...,tile=8x1:padding=2:color=0x222222" "$O/strip_008.15.png"
@@ -61,7 +61,7 @@ ffmpeg -i "$V" -an -vf "select='gt(scene,0.25)',showinfo" -f null - 2>&1 | grep 
 
 # 3. Phone test: 360 px wide, as a video and as 1 fps sheets
 ffmpeg -i "$V" -vf "scale=360:-2:flags=area" -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p -c:a aac -b:a 96k "$O/phone_360.mp4"
-ffmpeg -i "$V" -vf "fps=1,scale=360:-2:flags=area,drawtext=...,tile=6x2:padding=4:color=0x222222" "$O/phone_360_%02d.png"
+ffmpeg -i "$V" -vf "fps=1:round=up,scale=360:-2:flags=area,drawtext=...,tile=6x2:padding=4:color=0x222222" "$O/phone_360_%02d.png"
 
 # 4. Loop seam: first and last frames, SSIM, a side-by-side with a 4x difference, audio level at both ends
 ffmpeg -i "$V" -frames:v 1 "$O/first.png"
