@@ -28,6 +28,20 @@ npx skills add https://github.com/latent-spaces/brag --skill brag-slim
 
 Already have the `/brag` plugin? `/brag-slim` is included from version 0.4.0. Run `claude plugin update brag` to get it.
 
+## Dickerson Services motion skill
+
+[`skills/dickerson-motion/`](skills/dickerson-motion/SKILL.md) makes Dickerson Services videos in `/brag-slim`'s lean Opus 5.5 mode: before-and-afters, service explainers, seasonal promos, social cuts, lead-gen ads and brand story pieces. On top of `/brag-slim` it adds:
+
+- the brand and tone rules, in `RULES.md` (read first on every run);
+- a style guide and shot list that you approve before any render code is written;
+- a scored critique loop;
+- native renders at 1080×1920, 1080×1080 and 1920×1080 from one timeline;
+- cuts timed to measured beats (librosa).
+
+Ask your agent for a Dickerson Services video in this repo and the skill loads from `.claude/skills/` (also `.agents/` and `.opencode/`). Setup for macOS, Linux and Windows 11 is in [`skills/dickerson-motion/INSTALL.md`](skills/dickerson-motion/INSTALL.md).
+
+> **Windows:** those skill folders are symlinks. Clone with `git clone -c core.symlinks=true` with Developer Mode on, or copy `skills/dickerson-motion/` into `.claude/skills/` yourself (see INSTALL.md).
+
 ## Install /brag
 
 ```bash
@@ -109,12 +123,14 @@ You get a `brag-output/` folder with the plan, a composition brief, share copy, 
 
 - `skills/brag/` — the skill, references, and bundled music + SFX
 - `skills/brag-slim/` — `/brag-slim`, the single-file skill for Claude Opus 5.5
+- `skills/dickerson-motion/` — the Dickerson Services motion skill: brand rules, approval gate, critique loop, three-format renders, beat analysis
 - `examples/` — fake product sites used as a benchmark suite
 - `docs/` — the launch site (GitHub Pages)
 - `.claude-plugin/` — plugin manifest + marketplace catalog
 - `.claude/skills/brag/` — symlink → `skills/brag/` (Claude Code discovery)
 - `.agents/skills/brag/` — symlink → `skills/brag/` (Codex CLI + opencode discovery)
 - `.opencode/skills/brag/` — symlink → `skills/brag/` (opencode discovery)
+- `.claude/skills/dickerson-motion/`, `.agents/skills/dickerson-motion/`, `.opencode/skills/dickerson-motion/` — symlinks → `skills/dickerson-motion/`
 
 ## Credits
 

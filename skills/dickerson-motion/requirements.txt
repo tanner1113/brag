@@ -1,0 +1,5 @@
+# Audio analysis for beat-timed cuts (scripts/beats.py). Install into a virtual
+# environment; see INSTALL.md for macOS, Linux and Windows.
+librosa>=0.10.2    # ISC license: beat tracking, onsets
+numpy>=1.26        # BSD-3-Clause (also used by scripts/reference.py)
+soundfile>=0.12.1  # BSD-3-Clause: audio reading; its wheels bundle libsndfile (WAV, FLAC, OGG, MP3)

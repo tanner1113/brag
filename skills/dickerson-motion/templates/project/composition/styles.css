@@ -1,0 +1,78 @@
+/* Brand values from RULES.md. No transitions or animations here: seek(t) moves everything. */
+@font-face {
+  font-family: 'Noto Sans Display';
+  src: url('fonts/NotoSansDisplay-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+}
+@font-face {
+  font-family: 'Noto Sans';
+  src: url('fonts/NotoSans-VF.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+}
+
+:root {
+  --bg: #111111;
+  --red: #AB1525;
+  --red-text: #D51E30;
+  --text: #FAFAFA;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); overflow: hidden; }
+
+#stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans', sans-serif;
+}
+.scene { position: absolute; inset: 0; }
+.scene > *, #stage > * { position: absolute; }
+
+.photo { overflow: hidden; }
+.photo img, .photo .clip img { position: absolute; max-width: none; }
+.photo .clip, .photo .divider, .photo .tag { position: absolute; }
+.photo .clip { overflow: hidden; }
+.fade-bottom { -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent); mask-image: linear-gradient(to bottom, #000 72%, transparent); }
+.fade-right { -webkit-mask-image: linear-gradient(to right, #000 76%, transparent); mask-image: linear-gradient(to right, #000 76%, transparent); }
+
+.lines {
+  font-family: 'Noto Sans Display', sans-serif;
+  font-weight: 900;
+  font-stretch: 75%;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+}
+.lines .mask { overflow: hidden; white-space: nowrap; }
+.lines span { display: inline-block; }
+.lines .accent { color: var(--red-text); }
+
+.divider { top: 0; bottom: 0; width: 6px; background: var(--text); }
+.tag {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.22em 0.55em;
+  background: var(--bg);
+  color: var(--text);
+  white-space: nowrap;
+}
+.tag.red { background: var(--red); }
+
+.bug, .end-logo { object-fit: contain; object-position: left center; }
+.button {
+  display: flex;
+  align-items: center;
+  padding: 0 0.7em;
+  background: var(--red);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.phone { font-family: 'Noto Sans Display', sans-serif; font-weight: 800; font-stretch: 87.5%; line-height: 1; }
+.url { font-weight: 600; line-height: 1.2; }
+
+.wipe { inset: 0; background: var(--red); }
+.guide { outline: 2px dashed #3ddc84; pointer-events: none; }
