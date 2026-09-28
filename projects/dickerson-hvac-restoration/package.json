@@ -1,0 +1,16 @@
+{
+  "name": "dickerson-hvac-restoration-video",
+  "private": true,
+  "type": "module",
+  "description": "30s vertical motion graphic for Dickerson Services' HVAC System Restoration, built with /brag-slim.",
+  "scripts": {
+    "prep": "bash prep-assets.sh",
+    "audio": "python3 build-audio.py",
+    "stills": "node render.mjs --stills",
+    "render": "node render.mjs",
+    "contact-sheet": "node contact-sheet.mjs"
+  },
+  "dependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}
