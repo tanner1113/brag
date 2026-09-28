@@ -34,14 +34,14 @@ html, body { background: var(--bg); overflow: hidden; }
 
 /* Photo band: every photo layer lives inside it, so nothing photographic reaches the header band. */
 .band { overflow: hidden; z-index: 1; }
-.band .layer, .band .clip, .band img, .band .divider, .band .tag, .band .dim { position: absolute; }
+.band .layer, .band .half, .band img, .band .divider, .band .tag, .band .dim { position: absolute; }
 .band img { max-width: none; }
-.band .clip { overflow: hidden; }
+.band .half { overflow: hidden; }
 .band .dim { background: var(--bg); }
 .fade-bottom { -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent); mask-image: linear-gradient(to bottom, #000 76%, transparent); }
 .fade-right { -webkit-mask-image: linear-gradient(to right, #000 78%, transparent); mask-image: linear-gradient(to right, #000 78%, transparent); }
 
-.divider { top: 0; bottom: 0; width: 6px; background: var(--text); }
+.divider { background: var(--text); }
 .tag {
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -77,13 +77,16 @@ html, body { background: var(--bg); overflow: hidden; }
   white-space: nowrap;
 }
 
+/* The three paths: headline lines; timeline.js eases the risen one into the kicker's style. */
 .path {
   z-index: 2;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-family: 'Noto Sans Display', sans-serif;
+  font-weight: 900;
+  font-stretch: 75%;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
   line-height: 1;
   white-space: nowrap;
-  background: var(--surface);
   color: var(--text);
 }
 .path .fill { position: absolute; inset: 0; background: var(--red); }
@@ -93,19 +96,18 @@ html, body { background: var(--bg); overflow: hidden; }
 .check-row .cbox { position: relative; flex: none; background: var(--red); }
 .check-row .cbox svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .check-row .txt { font-weight: 700; white-space: pre; line-height: 1.1; }
-.check-row.caps .txt { text-transform: uppercase; letter-spacing: 0.02em; font-stretch: 87.5%; }
 
 .button {
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 0.45em;
+  gap: 0.4em;
   padding: 0 0.55em;
   background: var(--red);
   white-space: nowrap;
 }
-.button .book { font-weight: 700; letter-spacing: 0.1em; font-size: 0.5em; }
-.button .phone { font-family: 'Noto Sans Display', sans-serif; font-weight: 800; font-stretch: 87.5%; line-height: 1; }
+.button .book { font-weight: 700; letter-spacing: 0.08em; font-size: 0.75em; line-height: 1; }
+.button .phone { font-weight: 700; line-height: 1; }
 .url { z-index: 2; font-weight: 600; line-height: 1.2; }
 
 .wipe { z-index: 5; background: var(--red); }

@@ -1,26 +1,15 @@
 // Dickerson Services, HVAC System Restoration, v2: one timeline, three native formats.
 // Everything on screen is a pure function of t in seconds: window.seek(t) sets it, and nothing
-// else moves anything. Shots, copy and times follow docs/shotlist.md; every scene change sits on
-// a measured beat from work/beats.json.
+// else moves anything. Shots, copy and times follow docs/shotlist.md; the times live in
+// timing.js, and every scene change sits on a measured beat from work/beats.json.
 // Preview: /composition/index.html?format=square&t=4.2 (add &guides=1 to outline the layout boxes).
 import { cover, layout, lerpBox } from './layout.js';
 import { clamp, ease, lerp, noise, progress } from './motion.js';
+import { DURATION, FPS, SPLIT, SWEEP, T, outBefore, travel, wipeSpan } from './timing.js';
 
 const params = new URLSearchParams(location.search);
 const FORMAT = params.get('format') || 'vertical';
 const L = layout(FORMAT);
-const FPS = 30;
-const DURATION = 29.6;
-
-// Video times of the measured beats each move sits on (docs/shotlist.md).
-const T = {
-  swipe: 3.265, sweep2: 3.784, paths: 5.445, highlight: 6.524, rise: 7.2,
-  s4a: 7.621, sweep4a: 8.156, s4b: 9.807, sweep4b: 10.335, s4c: 11.987, sweep4c: 12.515,
-  s4d: 14.169, rows4d: [14.169, 14.442, 14.715], sweep4d: 15.789,
-  s5a: 18.528, s5b: 22.337, line2: 22.9, end: 25.086, build: 25.33,
-};
-const WIPE_DUR = 0.46;
-const WIPES = [T.s5a, T.end]; // full cover lands on these downbeats
 
 // A line is a string, or a list of [text, accent] segments.
 const COPY = {
@@ -31,14 +20,15 @@ const COPY = {
   s4b: ['DEEP CLEANING', 'OF ACCESSIBLE', 'COMPONENTS'],
   s4c: ['REPLACEMENT', 'OF DEFINED', 'AGE-RELATED PARTS'],
   checklist: {
-    vertical: ['PERFORMANCE CHECKS', 'BEFORE-AND-AFTER PHOTOS', 'WRITTEN CONDITION REPORT'],
-    square: ['PERFORMANCE CHECKS', 'BEFORE-AND-AFTER PHOTOS', 'WRITTEN CONDITION REPORT'],
-    landscape: ['PERFORMANCE CHECKS', 'BEFORE-AND-AFTER\nPHOTOS', 'WRITTEN CONDITION\nREPORT'],
+    vertical: ['Performance checks', 'Before-and-after photos', 'Written condition report'],
+    square: ['Performance checks', 'Before-and-after photos', 'Written condition report'],
+    landscape: ['Performance checks', 'Before-and-after\nphotos', 'Written condition\nreport'],
   },
+  evidenceHead: [[['EVIDENCE', true], [' BEFORE', false]], 'RECOMMENDATION.'],
   evidence: {
-    vertical: ['We don’t decide', 'the answer before', [['looking at the system.', true]]],
-    square: ['We don’t decide', 'the answer before', [['looking at the system.', true]]],
-    landscape: ['We don’t decide', 'the answer before', [['looking at', true]], [['the system.', true]]],
+    vertical: ['We don’t decide the answer', 'before looking at the system.'],
+    square: ['We don’t decide the answer', 'before looking at the system.'],
+    landscape: ['We don’t decide the', 'answer before looking', 'at the system.'],
   },
   statement: ['Replacement may be', 'the right answer.', 'It shouldn’t be the', [['automatic answer.', true]]],
   offer: [[['$85 ', true], ['AGING HVAC', false]], 'EVALUATION'],
@@ -81,52 +71,83 @@ place(band, L.photo);
 const BW = L.photo.w;
 const BH = L.photo.h;
 const inner = { x: 0, y: 0, w: BW, h: BH };
+const GAP = 18; // between a label and the divider it rides
 
-// A photo layer: a still, or a before/after pair whose AFTER half is revealed by a divider that
-// sweeps left to right, with each label riding on its own side of the divider (no corner labels).
-// Both halves share one framing: a slow push-in around the focal point plus seeded drift.
-function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1.06 }) {
+// A photo layer: a still, or a before/after pair from one job, both halves framed alike (a slow
+// push-in around the focal point plus seeded drift). Three reveals, so no move runs three times
+// in a row: 'x' sweeps a divider left to right, 'y' sweeps it top to bottom, and 'split' slides
+// the AFTER half in beside the BEFORE half, along L.split. BEFORE and AFTER ride the divider on
+// their own sides and show only while it's on screen: no labels parked in the frame.
+function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1.06, reveal = 'x' }) {
   const layer = el('div', 'layer', band);
   place(layer, inner);
-  const imgs = [image(photo(before), '', layer)];
+  const halves = [el('div', 'half', layer)];
+  const imgs = [image(photo(before), '', halves[0])];
+  const axis = reveal === 'split' ? L.split : reveal;
+  const len = axis === 'x' ? BW : BH;
   const pair = {};
   if (after) {
-    pair.clip = el('div', 'clip', layer);
-    place(pair.clip, inner);
-    imgs.push(image(photo(after), '', pair.clip));
+    halves.push(el('div', 'half', layer));
+    imgs.push(image(photo(after), '', halves[1]));
     pair.divider = el('div', 'divider', layer);
+    place(pair.divider, axis === 'x' ? { x: 0, y: 0, w: 6, h: BH } : { x: 0, y: 0, w: BW, h: 6 });
     pair.before = el('div', 'tag', layer);
     pair.after = el('div', 'tag red', layer);
     pair.before.textContent = 'BEFORE';
     pair.after.textContent = 'AFTER';
-    for (const tag of [pair.before, pair.after]) {
-      tag.style.fontSize = px(L.label.size);
-      tag.style.top = px(BH * L.label.at);
-    }
+    for (const tag of [pair.before, pair.after]) tag.style.fontSize = px(L.label.size);
   }
+  for (const h of halves) place(h, inner);
   const dim = el('div', 'dim', layer);
   place(dim, inner);
   const f = Array.isArray(focus) ? focus : focus[FORMAT];
-  return (t, { on, t0, t1, sweep = null, dimAmt = 0, dx = 0 }) => {
+
+  // Put a label `ahead` of the divider at d (toward the far edge) or behind it, fading it when it
+  // runs out of room on its side.
+  function ride(tag, d, ahead, vis) {
+    const size = axis === 'x' ? tag.offsetWidth : tag.offsetHeight;
+    const at = ahead ? d + GAP : d - GAP - size;
+    const room = ahead ? len - d - GAP - size : d - GAP - size;
+    if (axis === 'x') Object.assign(tag.style, { left: px(at), top: px(BH * L.label.at) });
+    else Object.assign(tag.style, { left: px(BW * L.label.x - tag.offsetWidth / 2), top: px(at) });
+    tag.style.opacity = String(clamp(room / 40) * vis);
+  }
+
+  return (t, { on, t0, t1, move = null, dimAmt = 0, dx = 0 }) => {
     show(layer, on);
+    if (!on) return;
     layer.style.transform = `translateX(${px(dx)})`;
     const z = lerp(1, z1, ease.inOutSine(clamp((t - t0) / (t1 - t0))));
     const nx = noise(seed, t * 0.35) * 6;
     const ny = noise(seed + 7, t * 0.35) * 4;
-    for (const i of imgs) {
-      const c = cover(i.naturalWidth, i.naturalHeight, inner, f, z, nx, ny);
-      Object.assign(i.style, { left: px(c.x), top: px(c.y), width: px(c.w), height: px(c.h) });
-    }
+    const p = move ? progress(t, move.start, move.dur, ease.inOutCubic) : 0;
+    const split = reveal === 'split';
+    // Divider position along the axis; in a split each half also slides so that its own focal
+    // point ends centered in its half.
+    const d = split ? lerp(len, len / 2, p) : p * len;
+    const shift = split ? [-(len - d) / 2, d / 2] : [0, 0];
+    imgs.forEach((img, i) => {
+      const c = cover(img.naturalWidth, img.naturalHeight, inner, f, z, nx, ny);
+      const sx = axis === 'x' ? shift[i] : 0;
+      const sy = axis === 'y' ? shift[i] : 0;
+      Object.assign(img.style, { left: px(c.x + sx), top: px(c.y + sy), width: px(c.w), height: px(c.h) });
+    });
     if (after) {
-      const x = lerp(-0.02, 1.02, sweep ? progress(t, sweep.start, sweep.dur, ease.inOutCubic) : 0) * BW;
-      const gap = 18;
-      pair.clip.style.clipPath = `inset(0 ${px(Math.max(0, BW - x))} 0 0)`;
-      pair.divider.style.left = px(x - 3);
-      pair.before.style.left = px(x + gap);
-      pair.after.style.left = px(x - gap - pair.after.offsetWidth);
-      const clear = clamp(1 - dimAmt / 0.3);
-      pair.before.style.opacity = String(clamp((BW - x - gap - pair.before.offsetWidth) / 40) * clear);
-      pair.after.style.opacity = String(clamp((x - gap - pair.after.offsetWidth) / 40) * clear);
+      const cut = px(Math.max(0, len - d));
+      const at = px(d);
+      if (split) {
+        halves[0].style.clipPath = axis === 'x' ? `inset(0 ${cut} 0 0)` : `inset(0 0 ${cut} 0)`;
+        halves[1].style.clipPath = axis === 'x' ? `inset(0 0 0 ${at})` : `inset(${at} 0 0 0)`;
+      } else {
+        halves[1].style.clipPath = axis === 'x' ? `inset(0 ${cut} 0 0)` : `inset(0 0 ${cut} 0)`;
+      }
+      // The divider fades in as it starts moving and, in a sweep, out as it reaches the far edge.
+      const vis = clamp(p / 0.06) * (split ? 1 : clamp((1 - p) / 0.06)) * clamp(1 - dimAmt / 0.3);
+      pair.divider.style[axis === 'x' ? 'left' : 'top'] = px(d - 3);
+      pair.divider.style.opacity = String(vis);
+      // In a sweep AFTER trails the divider and BEFORE leads it; in a split BEFORE is behind.
+      ride(pair.before, d, !split, vis);
+      ride(pair.after, d, split, vis);
     }
     dim.style.opacity = String(dimAmt);
   };
@@ -159,8 +180,9 @@ function textLines(cls, lines, size, lineHeight) {
       place(wrap, { x, y, w, h: api.height });
       return api;
     },
-    // tIn: a start time (lines follow 0.08 s apart) or one start time per line.
-    frame(t, tIn, tOut = Infinity) {
+    // tIn: a start time (lines follow 0.08 s apart) or one start time per line. The block is gone
+    // from tHide on, whatever its exit is doing (a cut or a wipe takes it).
+    frame(t, tIn, tOut = Infinity, tHide = Infinity) {
       let visible = false;
       spans.forEach((s, i) => {
         const start = Array.isArray(tIn) ? tIn[i] : tIn + i * 0.08;
@@ -169,7 +191,7 @@ function textLines(cls, lines, size, lineHeight) {
         s.style.transform = `translateY(${((1 - pin) * 110 - pout * 110).toFixed(2)}%)`;
         visible ||= pin > 0 && pout < 1;
       });
-      show(wrap, visible);
+      show(wrap, visible && t < tHide);
     },
   };
   return api;
@@ -180,12 +202,17 @@ function kickerTag(text) {
   const tag = el('div', 'kicker');
   tag.textContent = text;
   tag.style.fontSize = px(L.kicker.size);
+  let size = L.kicker.size;
   return {
     tag,
     get height() { return tag.offsetHeight; },
+    get width() { return tag.offsetWidth; },
+    get size() { return size; },
     fit(maxW) {
-      tag.style.fontSize = px(L.kicker.size);
-      if (tag.offsetWidth > maxW) tag.style.fontSize = px(L.kicker.size * maxW / tag.offsetWidth);
+      size = L.kicker.size;
+      tag.style.fontSize = px(size);
+      if (tag.offsetWidth > maxW) size *= maxW / tag.offsetWidth;
+      tag.style.fontSize = px(size);
     },
     at(x, y) {
       Object.assign(tag.style, { left: px(x), top: px(y) });
@@ -202,9 +229,9 @@ function kickerTag(text) {
 const CHECK = '<svg viewBox="0 0 24 24"><polyline points="5.5,12.5 10,17 18.5,7.5" fill="none" stroke="#FAFAFA" stroke-width="3.2" stroke-linecap="square"/></svg>';
 
 // Check rows: a red box that ticks, then the text slides in from the left out of a mask.
-function checkRows(items, spec, caps) {
+function checkRows(items, spec) {
   const rows = items.map((text) => {
-    const r = el('div', `check-row${caps ? ' caps' : ''}`);
+    const r = el('div', 'check-row');
     const b = el('div', 'cbox', r);
     b.innerHTML = CHECK;
     const tx = el('span', 'txt', r);
@@ -215,7 +242,6 @@ function checkRows(items, spec, caps) {
   return {
     get height() { return total; },
     fit(maxW) {
-      let fs = spec.size;
       const gap = 0.45;
       for (const { r, b } of rows) {
         r.style.fontSize = px(spec.size);
@@ -223,7 +249,7 @@ function checkRows(items, spec, caps) {
         Object.assign(b.style, { width: px(spec.box), height: px(spec.box) });
       }
       const widest = Math.max(...rows.map(({ tx }) => tx.getBoundingClientRect().width));
-      fs = spec.size * Math.min(1, (maxW - spec.box - gap * spec.size) / widest);
+      const fs = spec.size * Math.min(1, (maxW - spec.box - gap * spec.size) / widest);
       for (const { r } of rows) r.style.fontSize = px(fs);
       total = rows.reduce((sum, { r }) => sum + r.offsetHeight, 0) + (rows.length - 1) * (spec.gap ?? 14);
     },
@@ -252,40 +278,42 @@ const layers = {
   hook: photoLayer({ before: '11_before', focus: [0.5, 0.42], seed: 3 }),
   s2: photoLayer({ before: '08_before', after: '08_after', focus: [0.45, 0.45], seed: 5 }),
   s4a: photoLayer({ before: '04_before', after: '04_after', focus: { vertical: [0.4, 0.55], square: [0.4, 0.62], landscape: [0.4, 0.55] }, seed: 7 }),
-  s4b: photoLayer({ before: '09_before', after: '09_after', focus: [0.5, 0.45], seed: 9 }),
-  s4c: photoLayer({ before: '06_before', after: '06_after', focus: { vertical: [0.62, 0.5], square: [0.6, 0.5], landscape: [0.75, 0.5] }, seed: 11 }),
+  s4b: photoLayer({ before: '09_before', after: '09_after', focus: [0.5, 0.45], seed: 9, reveal: 'y' }),
+  s4c: photoLayer({ before: '06_before', after: '06_after', focus: { vertical: [0.62, 0.5], square: [0.6, 0.5], landscape: [0.75, 0.5] }, seed: 11, reveal: 'split' }),
   s4d: photoLayer({ before: '07_before', after: '07_after', focus: { vertical: [0.5, 0.35], square: [0.5, 0.3], landscape: [0.5, 0.4] }, seed: 13 }),
   s5: photoLayer({ before: '10_before', focus: { vertical: [0.55, 0.45], square: [0.55, 0.5], landscape: [0.5, 0.45] }, seed: 15, z1: 1.08 }),
 };
 
-const hook = textLines('lines', COPY.hook, L.headline.size, L.headline.lineHeight);
-const third = textLines('lines', COPY.third, L.headline.size, L.headline.lineHeight);
-const h4a = textLines('lines', COPY.s4a, L.headline.size, L.headline.lineHeight);
-const h4b = textLines('lines', COPY.s4b, L.headline.size, L.headline.lineHeight);
-const h4c = textLines('lines', COPY.s4c, L.headline.size, L.headline.lineHeight);
-const checklist = checkRows(perFormat(COPY.checklist), L.checklist, true);
+const headline = (lines) => textLines('lines', lines, L.headline.size, L.headline.lineHeight);
+const hook = headline(COPY.hook);
+const third = headline(COPY.third);
+const h4a = headline(COPY.s4a);
+const h4b = headline(COPY.s4b);
+const h4c = headline(COPY.s4c);
+const checklist = checkRows(perFormat(COPY.checklist), L.checklist);
 const kA = kickerTag('SYSTEM RESTORATION');
 const kB = kickerTag('MAY INCLUDE');
-const kC = kickerTag('EVIDENCE BEFORE RECOMMENDATION');
+const evHead = headline(COPY.evidenceHead);
 const evidence = textLines('sentence', perFormat(COPY.evidence), L.statement.size, L.statement.lineHeight);
 const statement = textLines('sentence', COPY.statement, L.statement.size, L.statement.lineHeight);
 
-// Three paths: rows slide in, the middle one fills red and then rises into the kicker slot.
-const ROW_PAD = [0.34, 0.6];
-const KICK_PAD = [0.22, 0.55];
+// Three paths, set as headline lines. On the highlight beat the middle one fills red and the
+// others dim; then it shrinks and rises into the kicker slot, easing its width, weight, tracking
+// and padding until it matches the SYSTEM RESTORATION kicker that replaces it on the cut to 4a.
+const PATH_PAD = [0.1, 0.22];
+const KICK_PAD = [0.22, 0.55]; // .kicker padding in styles.css
 const paths = COPY.paths.map((label) => {
   const r = el('div', 'path');
   const fill = el('div', 'fill', r);
-  const s = el('span', '', r);
-  s.textContent = label;
+  el('span', '', r).textContent = label;
   return { r, fill };
 });
-const pathPos = [];
+const pathGeo = { size: 0, rows: [], track: 0.08 };
 let kickerY = 0;
 
 // End card.
 const offer = textLines('lines', COPY.offer, L.end.offer.size, 1.0);
-const endChecks = checkRows(perFormat(COPY.checks), { ...L.end.checks, gap: 12 }, false);
+const endChecks = checkRows(perFormat(COPY.checks), { ...L.end.checks, gap: 12 });
 const button = el('div', 'button');
 el('span', 'book', button).textContent = 'BOOK';
 el('span', 'phone', button).textContent = COPY.phone;
@@ -307,10 +335,10 @@ if (params.has('guides')) {
 function arrange() {
   const tw = L.text.w;
   const anchorTop = (h) => (L.text.anchor === 'center' ? L.text.y + (L.text.h - h) / 2 : L.text.y);
-  for (const k of [kA, kB, kC]) k.fit(tw);
+  for (const k of [kA, kB]) k.fit(tw);
   const kickH = kA.height + L.kicker.gap;
 
-  for (const h of [hook, third, h4a, h4b, h4c]) h.fit(tw);
+  for (const h of [hook, third, h4a, h4b, h4c, evHead]) h.fit(tw);
   hook.at(L.text.x, anchorTop(hook.height), tw);
   third.at(L.text.x, anchorTop(third.height), tw);
 
@@ -323,18 +351,29 @@ function arrange() {
   checklist.at(L.text.x, kickerY + kickH);
 
   evidence.fit(tw);
-  const evTop = anchorTop(kickH + evidence.height);
-  kC.at(L.text.x, evTop);
-  evidence.at(L.text.x, evTop + kickH, tw);
+  const evGap = Math.round(L.statement.size * 0.45);
+  const evTop = anchorTop(evHead.height + evGap + evidence.height);
+  evHead.at(L.text.x, evTop, tw);
+  evidence.at(L.text.x, evTop + evHead.height + evGap, tw);
   statement.fit(tw);
   statement.at(L.text.x, anchorTop(statement.height), tw);
 
-  const rowsTop = anchorTop(3 * L.rows.rowH + 2 * L.rows.gap);
-  paths.forEach(({ r }, i) => {
-    r.style.fontSize = px(L.rows.size);
-    r.style.padding = `${ROW_PAD[0]}em ${ROW_PAD[1]}em`;
-    pathPos[i] = { x: L.text.x, y: rowsTop + i * (L.rows.rowH + L.rows.gap) + (L.rows.rowH - r.offsetHeight) / 2 };
+  // Three paths: one size for all three rows, as large as the column allows.
+  const style = (r, size, stretch, weight, track, pad) => Object.assign(r.style, {
+    fontSize: px(size), fontStretch: `${stretch}%`, fontWeight: String(weight),
+    letterSpacing: `${track}em`, padding: `${pad[0]}em ${pad[1]}em`,
   });
+  for (const { r } of paths) style(r, L.rows.size, 75, 900, 0.005, PATH_PAD);
+  const size = L.rows.size * Math.min(1, tw / Math.max(...paths.map(({ r }) => r.offsetWidth)));
+  const rowH = size * (1 + 2 * PATH_PAD[0]);
+  const gap = L.rows.gap * size / L.rows.size;
+  const rowsTop = anchorTop(3 * rowH + 2 * gap);
+  pathGeo.size = size;
+  pathGeo.rows = paths.map((_, i) => ({ x: L.text.x, y: rowsTop + i * (rowH + gap) }));
+  // Tracking that makes the risen row exactly as wide as the kicker it turns into.
+  const mid = paths[1].r;
+  style(mid, kA.size, 100, 700, 0.08, KICK_PAD);
+  pathGeo.track = 0.08 + (kA.width - mid.offsetWidth) / (COPY.paths[1].length * kA.size);
 
   const E = L.end;
   offer.fit(E.offer.w);
@@ -351,47 +390,45 @@ function pathsFrame(t) {
   const on = t >= T.paths && t < T.s4a;
   const lit = progress(t, T.highlight, 0.3, ease.outCubic);
   const rise = progress(t, T.rise, T.s4a - T.rise, ease.inOutCubic);
+  const leave = progress(t, T.rise, 0.25, ease.inCubic);
   paths.forEach(({ r, fill }, i) => {
     show(r, on);
-    const p = progress(t, T.paths + i * 0.08, 0.4, ease.outQuart);
-    let { x, y } = pathPos[i];
-    let size = L.rows.size;
-    let pad = ROW_PAD;
+    if (!on) return;
+    const pin = progress(t, T.paths + i * 0.08, 0.42, ease.outQuart);
+    const { x, y } = pathGeo.rows[i];
     let clipL = 0;
     if (i === 1) {
       fill.style.clipPath = `inset(0 ${((1 - lit) * 100).toFixed(2)}% 0 0)`;
-      y = lerp(y, kickerY, rise);
-      size = lerp(L.rows.size, L.kicker.size, rise);
-      pad = [lerp(ROW_PAD[0], KICK_PAD[0], rise), lerp(ROW_PAD[1], KICK_PAD[1], rise)];
+      Object.assign(r.style, {
+        left: px(x), top: px(lerp(y, kickerY, rise)),
+        fontSize: px(lerp(pathGeo.size, kA.size, rise)),
+        fontStretch: `${lerp(75, 100, rise).toFixed(2)}%`,
+        fontWeight: String(Math.round(lerp(900, 700, rise))),
+        letterSpacing: `${lerp(0.005, pathGeo.track, rise).toFixed(4)}em`,
+        padding: `${lerp(PATH_PAD[0], KICK_PAD[0], rise).toFixed(4)}em ${lerp(PATH_PAD[1], KICK_PAD[1], rise).toFixed(4)}em`,
+      });
     } else {
       fill.style.clipPath = 'inset(0 100% 0 0)';
-      r.style.opacity = String(1 - 0.55 * lit);
-      clipL = progress(t, T.rise, 0.25, ease.inCubic) * 100;
+      Object.assign(r.style, { left: px(x), top: px(y), fontSize: px(pathGeo.size), opacity: String(1 - 0.62 * lit) });
+      clipL = leave * 100;
     }
-    Object.assign(r.style, {
-      left: px(x + (1 - p) * -40), top: px(y), fontSize: px(size), padding: `${pad[0]}em ${pad[1]}em`,
-      clipPath: `inset(0 ${((1 - p) * 100).toFixed(2)}% 0 ${clipL.toFixed(2)}%)`,
-    });
+    // Rise out of a mask at the row's own box: slide down by d and clip what falls below it.
+    const d = (1 - pin) * 100;
+    r.style.transform = `translateY(${d.toFixed(2)}%)`;
+    r.style.clipPath = `inset(0 0 ${d.toFixed(2)}% ${clipL.toFixed(2)}%)`;
   });
 }
 
 function wipeFrame(t) {
-  let clip = 'inset(0 100% 0 0)';
-  let on = false;
-  for (const mid of WIPES) {
-    const lead = progress(t, mid - WIPE_DUR / 2, WIPE_DUR / 2, ease.inOutCubic);
-    const trail = progress(t, mid, WIPE_DUR / 2, ease.inOutCubic);
-    if (lead > 0 && trail < 1) {
-      on = true;
-      clip = `inset(0 ${((1 - lead) * 100).toFixed(3)}% 0 ${(trail * 100).toFixed(3)}%)`;
-    }
-  }
-  wipe.style.clipPath = clip;
-  show(wipe, on);
+  const span = wipeSpan(t);
+  wipe.style.clipPath = span
+    ? `inset(0 ${((1 - span.to) * 100).toFixed(3)}% 0 ${(span.from * 100).toFixed(3)}%)`
+    : 'inset(0 100% 0 0)';
+  show(wipe, !!span);
 }
 
 function logoFrame(t) {
-  const p = progress(t, T.build, 0.66, ease.inOutCubic);
+  const p = travel(t);
   const b = lerpBox(L.badge, L.end.logo, p);
   for (const img of [badge, silver]) {
     Object.assign(img.style, { left: px(b.x), top: px(b.y), width: px(b.w), height: px(b.w * img.naturalHeight / img.naturalWidth) });
@@ -405,13 +442,13 @@ function logoFrame(t) {
 
 function endFrame(t) {
   const on = t >= T.end;
-  offer.frame(t, on ? T.build + 0.22 : Infinity);
-  endChecks.frame(t, [T.build + 0.72, T.build + 1.02]);
-  const b = progress(t, T.build + 1.32, 0.38, ease.outQuart);
+  offer.frame(t, on ? T.offer : Infinity);
+  endChecks.frame(t, T.checks);
+  const b = progress(t, T.button, 0.38, ease.outQuart);
   button.style.clipPath = `inset(0 ${((1 - b) * 100).toFixed(2)}% 0 0)`;
   button.style.transform = `translateX(${((1 - b) * -30).toFixed(2)}px)`;
   show(button, b > 0);
-  url.frame(t, on ? T.build + 1.52 : Infinity);
+  url.frame(t, on ? T.url : Infinity);
 }
 
 function seek(t) {
@@ -421,26 +458,26 @@ function seek(t) {
   layers.hook(t, { on: t < T.swipe + 0.42, t0: 0, t1: T.swipe, dx: -0.3 * BW * swipe });
   layers.s2(t, {
     on: t >= T.swipe && t < T.s4a, t0: T.swipe, t1: T.s4a, dx: (1 - swipe) * BW,
-    sweep: { start: T.sweep2, dur: 1.0 }, dimAmt: 0.62 * progress(t, T.paths, 0.5, ease.inOutSine),
+    move: { start: T.sweep2, dur: SWEEP }, dimAmt: 0.5 * progress(t, T.paths, 0.5, ease.inOutSine),
   });
-  layers.s4a(t, { on: t >= T.s4a && t < T.s4b, t0: T.s4a, t1: T.s4b, sweep: { start: T.sweep4a, dur: 1.0 } });
-  layers.s4b(t, { on: t >= T.s4b && t < T.s4c, t0: T.s4b, t1: T.s4c, sweep: { start: T.sweep4b, dur: 1.0 } });
-  layers.s4c(t, { on: t >= T.s4c && t < T.s4d, t0: T.s4c, t1: T.s4d, sweep: { start: T.sweep4c, dur: 1.0 } });
-  layers.s4d(t, { on: t >= T.s4d && t < T.s5a, t0: T.s4d, t1: T.s5a, sweep: { start: T.sweep4d, dur: 1.2 } });
+  layers.s4a(t, { on: t >= T.s4a && t < T.s4b, t0: T.s4a, t1: T.s4b, move: { start: T.sweep4a, dur: SWEEP } });
+  layers.s4b(t, { on: t >= T.s4b && t < T.s4c, t0: T.s4b, t1: T.s4c, move: { start: T.sweep4b, dur: SWEEP } });
+  layers.s4c(t, { on: t >= T.s4c && t < T.s4d, t0: T.s4c, t1: T.s4d, move: { start: T.split4c, dur: SPLIT } });
+  layers.s4d(t, { on: t >= T.s4d && t < T.s5a, t0: T.s4d, t1: T.s5a, move: { start: T.sweep4d, dur: 1.2 } });
   layers.s5(t, { on: t >= T.s5a && t < T.end, t0: T.s5a, t1: T.end, dimAmt: 0.72 * progress(t, T.s5b, 0.45, ease.inOutSine) });
 
   hook.frame(t, -1, T.swipe - 0.28);
-  third.frame(t, T.swipe + 0.04, T.paths - 0.28);
+  third.frame(t, T.swipe + 0.04, T.paths - 0.36);
   pathsFrame(t);
   kA.frame(t, T.s4a, T.s4b - 0.22, true);
-  h4a.frame(t, T.s4a + 0.04, T.s4b - 0.28);
+  h4a.frame(t, T.s4a + 0.04, outBefore(T.s4b, 2), T.s4b);
   kB.frame(t, T.s4b + 0.06, t >= T.s5a ? -Infinity : Infinity);
-  h4b.frame(t, T.s4b + 0.04, T.s4c - 0.28);
-  h4c.frame(t, T.s4c + 0.04, T.s4d - 0.28);
+  h4b.frame(t, T.s4b + 0.04, outBefore(T.s4c, 3), T.s4c);
+  h4c.frame(t, T.s4c + 0.04, outBefore(T.s4d, 3), T.s4d);
   checklist.frame(t, T.rows4d, T.s5a);
-  kC.frame(t, T.s5a + 0.04, T.s5b - 0.25);
-  evidence.frame(t, T.s5a + 0.06, T.s5b - 0.25);
-  statement.frame(t, [T.s5b, T.s5b + 0.08, T.line2, T.line2 + 0.08], t >= T.end ? -Infinity : Infinity);
+  evHead.frame(t, T.s5a + 0.06, outBefore(T.s5b, 2), T.s5b);
+  evidence.frame(t, T.sentence5a, outBefore(T.s5b, perFormat(COPY.evidence).length), T.s5b);
+  statement.frame(t, [T.s5b, T.s5b + 0.08, T.line2, T.line2 + 0.08], Infinity, T.end);
 
   wipeFrame(t);
   logoFrame(t);

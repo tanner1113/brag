@@ -5,6 +5,7 @@
 // Every format reserves a header band that holds only the logo badge. Transitions (the photo
 // swipe, the brand wipes) are confined to `content`, below the band, so the badge is never
 // covered or cut; the badge also sits above every other layer.
+// `split` is the axis the 4c before/after split runs along: side by side ('x') or stacked ('y').
 
 export const FORMATS = {
   vertical: { id: '9x16', w: 1080, h: 1920 },
@@ -24,12 +25,13 @@ const LAYOUTS = {
     content: box(0, 362, 1080, 1558),
     photo: { ...box(0, 372, 1080, 690), fade: 'bottom' },
     text: { ...box(90, 1082, 870, 418), anchor: 'top' },
-    kicker: { size: 36, gap: 16 },
+    kicker: { size: 42, gap: 16 },
     headline: { size: 104, lineHeight: 1.0 },
-    rows: { size: 56, rowH: 112, gap: 20 },
-    checklist: { size: 54, rowH: 84, gap: 18, box: 58 },
+    rows: { size: 100, gap: 14 },
+    checklist: { size: 56, rowH: 84, gap: 20, box: 58 },
     statement: { size: 60, lineHeight: 1.15 },
-    label: { size: 32, at: 0.42 },
+    label: { size: 38, at: 0.42, x: 0.5 },
+    split: 'x',
     end: {
       logo: box(90, 400, 560, 299),
       offer: { ...box(90, 780, 870, 210), size: 100 },
@@ -46,12 +48,13 @@ const LAYOUTS = {
     content: box(0, 138, 1080, 942),
     photo: { ...box(0, 146, 1080, 500), fade: 'bottom' },
     text: { ...box(60, 664, 960, 366), anchor: 'top' },
-    kicker: { size: 32, gap: 12 },
+    kicker: { size: 38, gap: 12 },
     headline: { size: 84, lineHeight: 1.0 },
-    rows: { size: 48, rowH: 96, gap: 16 },
-    checklist: { size: 48, rowH: 72, gap: 14, box: 50 },
+    rows: { size: 86, gap: 12 },
+    checklist: { size: 50, rowH: 72, gap: 14, box: 50 },
     statement: { size: 52, lineHeight: 1.15 },
-    label: { size: 30, at: 0.44 },
+    label: { size: 36, at: 0.44, x: 0.5 },
+    split: 'x',
     end: {
       logo: box(60, 170, 420, 224),
       offer: { ...box(60, 430, 960, 170), size: 84 },
@@ -61,26 +64,27 @@ const LAYOUTS = {
     },
   },
   // Photo left, text right. Type is sized to survive the 360-px phone test, since wide videos
-  // also play in phone feeds: the smallest must-read text is 64 px.
+  // also play in phone feeds: the smallest must-read text is 64 px, labels and kickers about 50.
   landscape: {
     safe: box(96, 30, 1728, 1020),
     header: box(0, 0, 1920, 150),
     badge: box(96, 38, 180, 95),
     content: box(0, 150, 1920, 930),
-    photo: { ...box(0, 150, 980, 930), fade: 'right' },
-    text: { ...box(1040, 190, 784, 840), anchor: 'center' },
-    kicker: { size: 44, gap: 18 },
+    photo: { ...box(0, 150, 960, 930), fade: 'right' },
+    text: { ...box(1010, 190, 814, 840), anchor: 'center' },
+    kicker: { size: 56, gap: 20 },
     headline: { size: 112, lineHeight: 1.0 },
-    rows: { size: 52, rowH: 110, gap: 24 },
-    checklist: { size: 60, rowH: 92, gap: 22, box: 64 },
-    statement: { size: 64, lineHeight: 1.15 },
-    label: { size: 40, at: 0.42 },
+    rows: { size: 104, gap: 16 },
+    checklist: { size: 64, rowH: 92, gap: 24, box: 66 },
+    statement: { size: 68, lineHeight: 1.15 },
+    label: { size: 48, at: 0.42, x: 0.4 },
+    split: 'y',
     end: {
       logo: box(140, 330, 720, 384),
-      offer: { ...box(1040, 250, 784, 230), size: 108 },
-      checks: { ...box(1040, 500, 784, 212), size: 60, rowH: 72, box: 52 },
-      button: { ...box(1040, 736, 784, 124), size: 64 },
-      url: { ...box(1040, 884, 784, 76), size: 60 },
+      offer: { ...box(1010, 222, 814, 230), size: 108 },
+      checks: { ...box(1010, 476, 814, 244), size: 64, rowH: 76, box: 56 },
+      button: { ...box(1010, 748, 814, 124), size: 68 },
+      url: { ...box(1010, 898, 814, 80), size: 64 },
     },
   },
 };

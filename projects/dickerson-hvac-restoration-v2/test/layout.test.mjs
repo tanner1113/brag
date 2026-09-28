@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { FORMATS, cover, layout, lerpBox } from '../composition/layout.js';
+import { DURATION, FPS, T, outBefore, travel, wipeSpan } from '../composition/timing.js';
 
 const inside = (b, r) => b.x >= r.x && b.y >= r.y && b.x + b.w <= r.x + r.w && b.y + b.h <= r.y + r.h;
 const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -32,7 +33,20 @@ for (const format of Object.keys(FORMATS)) {
     assert.ok(kickerH + 3 * L.headline.size * L.headline.lineHeight <= L.text.h);
     assert.ok(4 * L.headline.size * L.headline.lineHeight <= L.text.h);
     assert.ok(kickerH + 3 * L.checklist.rowH + 2 * L.checklist.gap <= L.text.h);
-    assert.ok(3 * L.rows.rowH + 2 * L.rows.gap <= L.text.h);
+    assert.ok(3 * L.rows.size * 1.2 + 2 * L.rows.gap <= L.text.h, 'three path rows (0.1em padding) overflow');
+  });
+
+  test(`${format}: the badge never touches a wipe, and it's on screen from frame 0`, () => {
+    for (let f = 0; f <= Math.round(DURATION * FPS); f++) {
+      const t = f / FPS;
+      const b = lerpBox(L.badge, L.end.logo, travel(t));
+      assert.ok(inside(b, frame), `badge leaves the frame at ${t.toFixed(3)} s`);
+      const span = wipeSpan(t);
+      if (!span) continue;
+      const w = { x: L.content.x + span.from * L.content.w, y: L.content.y, w: (span.to - span.from) * L.content.w, h: L.content.h };
+      assert.ok(!overlaps(b, w), `the wipe reaches the badge at ${t.toFixed(3)} s`);
+    }
+    assert.equal(travel(0), 0);
   });
 
   test(`${format}: end card parts don't overlap and the badge can travel to the logo`, () => {
@@ -60,6 +74,13 @@ test('cover fills the region and keeps the focal point in view', () => {
         assert.ok(c.x + c.w >= region.x + region.w - 1e-6 && c.y + c.h >= region.y + region.h - 1e-6, 'uncovered edge');
       }
     }
+  }
+});
+
+test('text blocks are gone before the hard cuts they precede', () => {
+  for (const [cut, lines] of [[T.s4b, 2], [T.s4c, 3], [T.s4d, 3], [T.s5b, 3]]) {
+    const lastGone = outBefore(cut, lines) + 0.04 * (lines - 1) + 0.25;
+    assert.ok(lastGone <= cut - 1 / FPS, `a ${lines}-line block is still leaving at the cut at ${cut} s`);
   }
 });
 
