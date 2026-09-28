@@ -1,0 +1,8 @@
+# Client photos, logos, renders and review images stay out of git (public repos especially).
+assets/
+work/
+out/
+review/
+ref/
+node_modules/
+composition/fonts/*.ttf

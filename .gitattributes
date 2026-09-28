@@ -2,3 +2,9 @@
 .agents/skills/brag -text
 .claude/skills/brag -text
 .opencode/skills/brag -text
+.agents/skills/dickerson-motion -text
+.claude/skills/dickerson-motion -text
+.opencode/skills/dickerson-motion -text
+
+# Shell scripts keep LF endings so they run in Git Bash on Windows
+*.sh text eol=lf
