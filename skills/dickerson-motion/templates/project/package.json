@@ -1,0 +1,17 @@
+{
+  "name": "dickerson-motion-piece",
+  "private": true,
+  "type": "module",
+  "description": "A Dickerson Services video: one timeline, three native formats. See the dickerson-motion skill.",
+  "scripts": {
+    "lint": "node render.mjs --lint",
+    "test": "node --test test/layout.test.mjs",
+    "check": "node render.mjs --check-determinism --format all",
+    "stills": "node render.mjs --stills 0,2,5 --format all",
+    "render": "node render.mjs --format all",
+    "serve": "node render.mjs --serve"
+  },
+  "dependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}
