@@ -3,7 +3,7 @@
 **The bar:** every score 8 or more, in every format. **Flagship:** yes (lead-gen ad for paid distribution), so at least 3 rounds.
 **Grader:** `skills/dickerson-motion/prompts/harsh-director.md` · **Images:** `review/<video-name>/round-<n>/` from `scripts/critique.sh` (not committed; they contain client photos)
 
-Round 1 was graded by the author. Rounds 2 and later were graded by a fresh reviewer (a separate agent given only the harsh-director prompt, RULES.md, CRITIQUE.md, the shot list and the round's images), as the prompt recommends; the author checked each claim against the images before logging it.
+Round 2 was graded by a fresh reviewer (a separate agent given only the harsh-director prompt, RULES.md, CRITIQUE.md, the shot list and the round's images), as the prompt recommends; the author checked each claim against the images before logging it. Rounds 1, 3 and 4 were graded by the author: the fresh reviewer could not be started for rounds 3 and 4 (model usage limit).
 
 ## Round 1 · Sep 28, 2026 · first render
 
@@ -202,3 +202,74 @@ Verdict: ANOTHER ROUND
 - The 4c split eases out-cubic; its air cue uses the same curve.
 
 **Re-rendered:** all three formats in full. `npm test` (24 checks) and lint pass, and `npm run check` renders the same frame identically after seeking elsewhere and back. `check-badge.py`: header band untouched until 25.086 s in all three. Loudness −14.1 LUFS, true peak −1.8 dBTP.
+
+## Round 4 · Sep 29, 2026 · author
+
+The fresh-reviewer subagent was blocked by the model usage limit again, so the author graded round 4. Every contact sheet, strip and phone sheet in all three formats was checked, plus full-resolution frames from the delivered files wherever a tile was ambiguous (landscape 2.83, 18.47 and 25.10 s). The automated checks were re-run on the delivered files.
+
+### vertical (9x16)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 8 | 8 | 8 | 8 |
+
+Evidence for the 8s:
+- **Hook:** frame 0 is settled, with the whole hook in 104 px Display type over the overgrown unit and the badge in the header band. The photo punches in on the 1.079 downbeat. Nothing is black, faded up or held for a logo sting.
+- **Phone readability:** at 360 px every must-read line reads, down to the 46–50 px checklist rows, end card checks and URL (about 16 px on the phone).
+- **Motion quality:** round 3's three faults are gone. Text is already rising on the first frame after every cut (7.633, 12.000, 14.200, 22.367, 25.100), the push clips at the frame edges, and the 4c split moves from 12.533, its first frame after the beat. No strip shows a pop, collision, double exposure or crossfade.
+- **Variety:** the longest stretch with nothing new is 5a's settled text (19.3–22.3 s, 3.0 s) while its tiles push in. There are three different reveals, and none runs three times in a row.
+- **Brand accuracy:** the badge holds the header band from 0.00 until the end card cut, and the red wipe (18.30–18.76) stays below it. "$85" is the only price. There are no corner tags, brackets, glow or particles. Only photos 04, 06, 07, 08, 09 and 11 appear, with no mini-split, wall head or line set in any tile (06's copper stays outside the crop through 13.0–14.1).
+- **Sound sync:** −14.1 LUFS, −1.8 dBTP, last 50 ms silent. Each hard cut is the first frame after its measured downbeat, and the final hit lands on the end card cut (25.086, frame 25.100).
+
+Worst three problems, worst first:
+1. **[00:26.18–00:26.35]** The button opens left to right with its label clipped, so a partial phone number ("BOOK 256-203-") shows for about five frames, where every other line rises whole. **Fix:** raise the button out of a mask like the lines above it. **Re-render:** 26.1–26.6 s.
+2. **[00:25.10–00:25.20]** The badge's travel eases in-out, so for the end card's first four frames it has barely left the header and only the offer's first line is moving. **Fix:** ease the travel out-cubic so it moves from the cut. **Re-render:** 25.0–25.7 s.
+3. **[00:02.69–00:02.74]** The push also eases in-out: two frames after its beat it has moved under 5 px. **Fix:** out-cubic, as for the 4c split. **Re-render:** 2.6–3.2 s.
+
+None of the three shows as a fault at playback speed, and none takes a score below 8.
+
+Verdict: SHIP
+
+### square (1x1)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 8 | 8 | 8 | 8 |
+
+Evidence for the 8s: as vertical, with an 84 px hook over the overgrown unit. The smallest must-read type is the 46 px kickers, labels, checklist rows and end card checks (about 15 px on the phone), and all of it reads. The cuts, split, wipe and end card land on the same frames as vertical, and no tile shows banned equipment.
+
+Worst three problems, worst first:
+1. **[00:26.18–00:26.35]** The button's clipped reveal, as vertical. **Fix:** as vertical. **Re-render:** 26.1–26.6 s.
+2. **[00:25.10–00:25.20]** The badge's slow start on the end card cut, as vertical. **Fix:** as vertical. **Re-render:** 25.0–25.7 s.
+3. **[00:02.69–00:02.74]** The push's slow start, as vertical. **Fix:** as vertical. **Re-render:** 2.6–3.2 s.
+
+Verdict: SHIP
+
+### landscape (16x9)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 8 | 8 | 8 | 8 |
+
+Evidence for the 8s: frame 0 has the 120 px hook settled beside the overgrown unit, with the badge top left. In the 360-px test the checklist, the 5a sentence, the thesis (84 px, about 16 px on the phone) and the end card checks, button and URL all read. The smallest must-read type is BEFORE/AFTER (64 px, 12 px on the phone), still legible in its chip. At 2.83 s the hook's lines leave at the text column's inner edge (x 900) while "YOU MAY HAVE A THIRD OPTION." enters from the frame edge, so no type crosses the photo. The stacked 4c split moves from 12.533. At 18.47 the wipe covers everything but its last few pixels on the right, and never the header band. Brand and sound as vertical.
+
+Worst three problems, worst first:
+1. **[00:26.18–00:26.35]** The button's clipped reveal, as vertical. **Fix:** as vertical. **Re-render:** 26.1–26.6 s.
+2. **[00:25.10–00:25.20]** At the end card cut the badge is still in the header and only the offer's first line is rising in the right-hand column, so the left half of the frame is empty for four frames. **Fix:** as vertical. **Re-render:** 25.0–25.7 s.
+3. **[00:02.69–00:02.74]** The push's slow start, as vertical. **Fix:** as vertical. **Re-render:** 2.6–3.2 s.
+
+Verdict: SHIP
+
+**Left as they are:** the three notes above, recorded for the next revision.
+
+**Checked on the delivered files:** `npm test` (24 checks), lint and `npm run check` pass. `check-badge.py` passes in all three: 752 frames each (0–25.086 s), with a peak header band change of 49, 44 and 29 code values (vertical, square, landscape; the limit is 110). All three files are H.264 High, yuv420p, BT.709, 30 fps, AAC 48 kHz stereo, 29.6 s, −14.1 LUFS and −1.8 dBTP.
+
+## Final scores
+
+| Format | Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync | Verdict |
+|---|---|---|---|---|---|---|---|
+| vertical (1080×1920) | 8 | 8 | 8 | 8 | 8 | 8 | SHIP |
+| square (1080×1080) | 8 | 8 | 8 | 8 | 8 | 8 | SHIP |
+| landscape (1920×1080) | 8 | 8 | 8 | 8 | 8 | 8 | SHIP |
+
+Four rounds: round 1 and rounds 3–4 graded by the author, round 2 by a fresh reviewer.
