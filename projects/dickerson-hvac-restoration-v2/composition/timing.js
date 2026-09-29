@@ -6,19 +6,24 @@ export const DURATION = 29.6;
 export const FPS = 30;
 
 export const T = {
-  swipe: 3.265, sweep2: 3.784, paths: 5.445, highlight: 6.524, rise: 7.2,
+  punch: 1.079, swipe: 2.69, sweep2: 3.784, paths: 5.445, highlight: 6.524, rise: 7.2,
   s4a: 7.621, sweep4a: 8.156, s4b: 9.807, sweep4b: 10.335, s4c: 11.987, split4c: 12.515,
   s4d: 14.169, rows4d: [14.169, 14.442, 14.715], sweep4d: 15.789,
-  s5a: 18.528, sentence5a: 19.071, s5b: 22.337, line2: 22.9, end: 25.086,
-  // End card. The badge sets off once the wipe's trailing edge has cleared its path; the rest
-  // lands on the beat grid after the final hit (the track has no more attacks to measure).
-  travel: 25.2, offer: 25.2, checks: [25.632, 25.904], button: 26.177, url: 26.45,
+  // The 5a sentence follows straight on from its headline (not a beat) to leave it ~0.3 s a word.
+  s5a: 18.528, sentence5a: 18.83,
+  // 5b: two lines on the beat, two on the half-beat, and the red lands on the build downbeat.
+  s5b: 22.337, half5b: 22.618, flip5b: 22.9,
+  // End card: a hard cut on the track's final hit. The rest lands on the beat grid after it
+  // (the track has no more attacks to measure).
+  end: 25.086, travel: 25.086, checks: [25.632, 25.904], button: 26.177, url: 26.45,
 };
-export const SWEEP = 1.0;
+export const SWEEP = 1.3;
+export const SWEEP_4D = 1.4;
 export const SPLIT = 0.8;
+export const PUSH = 0.42;
 export const TRAVEL = 0.5;
 export const WIPE = 0.46;
-export const WIPES = [T.s5a, T.end]; // full cover lands on these downbeats
+export const WIPES = [T.s5a]; // full cover lands on this downbeat
 
 // The brand wipe crosses the content area left to right, covering it fully at each WIPES time.
 // Returns the covered span as fractions of the content width, or null when no wipe is on.
@@ -33,7 +38,3 @@ export function wipeSpan(t) {
 
 // The badge's travel from the header band into the end card logo, 0 to 1.
 export const travel = (t) => progress(t, T.travel, TRAVEL, ease.inOutCubic);
-
-// When a block of n lines should start leaving so its last line is gone before a cut at `cut`
-// (lines leave 0.04 s apart and take 0.25 s each).
-export const outBefore = (cut, n) => cut - 0.25 - 0.04 * (n - 1) - 0.05;

@@ -3,9 +3,9 @@
 // else moves anything. Shots, copy and times follow docs/shotlist.md; the times live in
 // timing.js, and every scene change sits on a measured beat from work/beats.json.
 // Preview: /composition/index.html?format=square&t=4.2 (add &guides=1 to outline the layout boxes).
-import { cover, layout, lerpBox } from './layout.js';
+import { cover, layout, lerpBox, tiles } from './layout.js';
 import { clamp, ease, lerp, noise, progress } from './motion.js';
-import { DURATION, FPS, SPLIT, SWEEP, T, outBefore, travel, wipeSpan } from './timing.js';
+import { DURATION, FPS, PUSH, SPLIT, SWEEP, SWEEP_4D, T, travel, wipeSpan } from './timing.js';
 
 const params = new URLSearchParams(location.search);
 const FORMAT = params.get('format') || 'vertical';
@@ -30,7 +30,8 @@ const COPY = {
     square: ['We don’t decide the answer', 'before looking at the system.'],
     landscape: ['We don’t decide the', 'answer before looking', 'at the system.'],
   },
-  statement: ['Replacement may be', 'the right answer.', 'It shouldn’t be the', [['automatic answer.', true]]],
+  // The last line turns red on the build downbeat (see `flip`).
+  statement: ['REPLACEMENT MAY BE', 'THE RIGHT ANSWER.', 'IT SHOULDN’T BE THE', 'AUTOMATIC ANSWER.'],
   offer: [[['$85 ', true], ['AGING HVAC', false]], 'EVALUATION'],
   checks: {
     vertical: ['A clear first look', 'A next-step recommendation'],
@@ -77,13 +78,15 @@ const GAP = 18; // between a label and the divider it rides
 // push-in around the focal point plus seeded drift). Three reveals, so no move runs three times
 // in a row: 'x' sweeps a divider left to right, 'y' sweeps it top to bottom, and 'split' slides
 // the AFTER half in beside the BEFORE half, along L.split. BEFORE and AFTER ride the divider on
-// their own sides and show only while it's on screen: no labels parked in the frame.
-function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1.06, reveal = 'x' }) {
+// their own sides; the divider starts and ends off the frame, so they ride in and out with it
+// and nothing is ever parked or faded.
+function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1.06, reveal = 'x', punch = null }) {
   const layer = el('div', 'layer', band);
   place(layer, inner);
   const halves = [el('div', 'half', layer)];
   const imgs = [image(photo(before), '', halves[0])];
-  const axis = reveal === 'split' ? L.split : reveal;
+  const split = reveal === 'split';
+  const axis = split ? L.split : reveal;
   const len = axis === 'x' ? BW : BH;
   const pair = {};
   if (after) {
@@ -101,31 +104,37 @@ function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1
   const dim = el('div', 'dim', layer);
   place(dim, inner);
   const f = Array.isArray(focus) ? focus : focus[FORMAT];
+  const extent = (tag) => (axis === 'x' ? tag.offsetWidth : tag.offsetHeight);
 
-  // Put a label `ahead` of the divider at d (toward the far edge) or behind it, fading it when it
-  // runs out of room on its side.
-  function ride(tag, d, ahead, vis) {
-    const size = axis === 'x' ? tag.offsetWidth : tag.offsetHeight;
-    const at = ahead ? d + GAP : d - GAP - size;
-    const room = ahead ? len - d - GAP - size : d - GAP - size;
+  // A label rides `ahead` of the divider at d (on the far-edge side) or behind it.
+  function ride(tag, d, ahead, opacity) {
+    const at = ahead ? d + GAP : d - GAP - extent(tag);
     if (axis === 'x') Object.assign(tag.style, { left: px(at), top: px(BH * L.label.at) });
     else Object.assign(tag.style, { left: px(BW * L.label.x - tag.offsetWidth / 2), top: px(at) });
-    tag.style.opacity = String(clamp(room / 40) * vis);
+    tag.style.opacity = String(opacity);
   }
 
   return (t, { on, t0, t1, move = null, dimAmt = 0, dx = 0 }) => {
     show(layer, on);
     if (!on) return;
     layer.style.transform = `translateX(${px(dx)})`;
-    const z = lerp(1, z1, ease.inOutSine(clamp((t - t0) / (t1 - t0))));
+    let z = lerp(1, z1, ease.inOutSine(clamp((t - t0) / (t1 - t0))));
+    if (punch) z *= 1 + punch.amt * progress(t, punch.at, punch.dur, ease.outCubic);
     const nx = noise(seed, t * 0.35) * 6;
     const ny = noise(seed + 7, t * 0.35) * 4;
-    const p = move ? progress(t, move.start, move.dur, ease.inOutCubic) : 0;
-    const split = reveal === 'split';
-    // Divider position along the axis; in a split each half also slides so that its own focal
-    // point ends centered in its half.
-    const d = split ? lerp(len, len / 2, p) : p * len;
-    const shift = split ? [-(len - d) / 2, d / 2] : [0, 0];
+    let d = 0;
+    let shift = [0, 0];
+    if (after) {
+      const sB = extent(pair.before);
+      const sA = extent(pair.after);
+      if (split) {
+        // The divider lands in the middle; each half slides so its own focal point ends centered.
+        d = lerp(len + GAP + sB + 6, len / 2, move ? progress(t, move.start, move.dur, ease.inOutCubic) : 0);
+        shift = [-Math.max(0, len - d) / 2, d / 2];
+      } else {
+        d = lerp(-(GAP + sB + 6), len + GAP + sA + 6, move ? progress(t, move.start, move.dur, ease.inOutSine) : 0);
+      }
+    }
     imgs.forEach((img, i) => {
       const c = cover(img.naturalWidth, img.naturalHeight, inner, f, z, nx, ny);
       const sx = axis === 'x' ? shift[i] : 0;
@@ -133,29 +142,54 @@ function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1
       Object.assign(img.style, { left: px(c.x + sx), top: px(c.y + sy), width: px(c.w), height: px(c.h) });
     });
     if (after) {
-      const cut = px(Math.max(0, len - d));
-      const at = px(d);
+      const cut = px(clamp(len - d, 0, len));
+      const at = px(clamp(d, 0, len));
       if (split) {
         halves[0].style.clipPath = axis === 'x' ? `inset(0 ${cut} 0 0)` : `inset(0 0 ${cut} 0)`;
         halves[1].style.clipPath = axis === 'x' ? `inset(0 0 0 ${at})` : `inset(${at} 0 0 0)`;
       } else {
         halves[1].style.clipPath = axis === 'x' ? `inset(0 ${cut} 0 0)` : `inset(0 0 ${cut} 0)`;
       }
-      // The divider fades in as it starts moving and, in a sweep, out as it reaches the far edge.
-      const vis = clamp(p / 0.06) * (split ? 1 : clamp((1 - p) / 0.06)) * clamp(1 - dimAmt / 0.3);
+      const clear = clamp(1 - dimAmt / 0.3);
       pair.divider.style[axis === 'x' ? 'left' : 'top'] = px(d - 3);
-      pair.divider.style.opacity = String(vis);
+      pair.divider.style.opacity = String(clear);
       // In a sweep AFTER trails the divider and BEFORE leads it; in a split BEFORE is behind.
-      ride(pair.before, d, !split, vis);
-      ride(pair.after, d, split, vis);
+      ride(pair.before, d, !split, clear);
+      ride(pair.after, d, split, clear);
     }
+    dim.style.opacity = String(dimAmt);
+  };
+}
+
+// The 5a evidence: the before photos of three jobs side by side (stacked in landscape), each
+// with its own slow push-in. The brand wipe's trailing edge reveals them.
+function gridLayer(items, { seed = 21, z1 = 1.05 } = {}) {
+  const layer = el('div', 'layer', band);
+  place(layer, inner);
+  const alongX = L.grid.axis === 'x';
+  const cells = tiles(alongX ? BW : BH, items.length, L.grid.gap).map(({ at, size }, i) => {
+    const b = alongX ? { x: at, y: 0, w: size, h: BH } : { x: 0, y: at, w: BW, h: size };
+    const cell = el('div', 'half', layer);
+    place(cell, b);
+    return { img: image(photo(items[i].name), '', cell), region: { x: 0, y: 0, w: b.w, h: b.h }, focus: items[i].focus };
+  });
+  const dim = el('div', 'dim', layer);
+  place(dim, inner);
+  return (t, { on, t0, t1, dimAmt = 0 }) => {
+    show(layer, on);
+    if (!on) return;
+    const z = lerp(1, z1, ease.inOutSine(clamp((t - t0) / (t1 - t0))));
+    cells.forEach(({ img, region, focus }, i) => {
+      const c = cover(img.naturalWidth, img.naturalHeight, region, focus, z, noise(seed + i, t * 0.35) * 4, noise(seed + 9 + i, t * 0.35) * 3);
+      Object.assign(img.style, { left: px(c.x), top: px(c.y), width: px(c.w), height: px(c.h) });
+    });
     dim.style.opacity = String(dimAmt);
   };
 }
 
 // ---- type ----
 
-// Lines that rise out of their masks one after another, and rise away on exit.
+// Lines that rise out of their masks one after another.
 function textLines(cls, lines, size, lineHeight) {
   const wrap = el('div', cls);
   const spans = lines.map((line) => {
@@ -168,6 +202,7 @@ function textLines(cls, lines, size, lineHeight) {
   });
   let fs = size;
   const api = {
+    spans,
     get height() { return lines.length * fs * lineHeight; },
     fit(maxW) {
       Object.assign(wrap.style, { fontSize: px(size), lineHeight: String(lineHeight) });
@@ -180,24 +215,25 @@ function textLines(cls, lines, size, lineHeight) {
       place(wrap, { x, y, w, h: api.height });
       return api;
     },
-    // tIn: a start time (lines follow 0.08 s apart) or one start time per line. The block is gone
-    // from tHide on, whatever its exit is doing (a cut or a wipe takes it).
-    frame(t, tIn, tOut = Infinity, tHide = Infinity) {
+    // Lines rise in from tIn (0.08 s apart, or one time per line) and rise away from `out`. The
+    // block shows only from `from` until `hide`, so a cut can bring it in or take it, and `dx`
+    // slides every line sideways inside its mask (the push into scene 2).
+    frame(t, tIn, { out = Infinity, from = -Infinity, hide = Infinity, dx = 0 } = {}) {
       let visible = false;
       spans.forEach((s, i) => {
         const start = Array.isArray(tIn) ? tIn[i] : tIn + i * 0.08;
         const pin = progress(t, start, 0.42, ease.outQuart);
-        const pout = progress(t, tOut + i * 0.04, 0.25, ease.inCubic);
-        s.style.transform = `translateY(${((1 - pin) * 110 - pout * 110).toFixed(2)}%)`;
+        const pout = progress(t, out + i * 0.04, 0.25, ease.inCubic);
+        s.style.transform = `translate(${px(dx)}, ${((1 - pin) * 110 - pout * 110).toFixed(2)}%)`;
         visible ||= pin > 0 && pout < 1;
       });
-      show(wrap, visible && t < tHide);
+      show(wrap, visible && t >= from && t < hide);
     },
   };
   return api;
 }
 
-// A red kicker tag, revealed from the left and cleared to the right.
+// A red kicker tag, revealed from the left; a cut takes it.
 function kickerTag(text) {
   const tag = el('div', 'kicker');
   tag.textContent = text;
@@ -217,35 +253,35 @@ function kickerTag(text) {
     at(x, y) {
       Object.assign(tag.style, { left: px(x), top: px(y) });
     },
-    frame(t, tIn, tOut = Infinity, instant = false) {
-      const pin = instant ? Number(t >= tIn) : progress(t, tIn, 0.3, ease.outCubic);
-      const pout = progress(t, tOut, 0.2, ease.inCubic);
-      tag.style.clipPath = `inset(0 ${((1 - pin) * 100).toFixed(2)}% 0 ${(pout * 100).toFixed(2)}%)`;
-      show(tag, pin > 0 && pout < 1);
+    frame(t, tIn, hide = Infinity, instant = false) {
+      const pin = instant ? Number(t >= tIn) : progress(t, tIn, 0.25, ease.outCubic);
+      tag.style.clipPath = `inset(0 ${((1 - pin) * 100).toFixed(2)}% 0 0)`;
+      show(tag, pin > 0 && t < hide);
     },
   };
 }
 
 const CHECK = '<svg viewBox="0 0 24 24"><polyline points="5.5,12.5 10,17 18.5,7.5" fill="none" stroke="#FAFAFA" stroke-width="3.2" stroke-linecap="square"/></svg>';
 
-// Check rows: a red box that ticks, then the text slides in from the left out of a mask.
+// Check rows: each row rises out of its own mask like a headline line, then its box ticks.
 function checkRows(items, spec) {
   const rows = items.map((text) => {
     const r = el('div', 'check-row');
-    const b = el('div', 'cbox', r);
+    const inner = el('div', 'check-inner', r);
+    const b = el('div', 'cbox', inner);
     b.innerHTML = CHECK;
-    const tx = el('span', 'txt', r);
+    const tx = el('span', 'txt', inner);
     tx.textContent = text;
-    return { r, b, tx, svg: b.querySelector('svg') };
+    return { r, inner, b, tx, svg: b.querySelector('svg') };
   });
   let total = 0;
   return {
     get height() { return total; },
     fit(maxW) {
       const gap = 0.45;
-      for (const { r, b } of rows) {
+      for (const { r, inner, b } of rows) {
         r.style.fontSize = px(spec.size);
-        r.style.gap = `${gap}em`;
+        inner.style.gap = `${gap}em`;
         Object.assign(b.style, { width: px(spec.box), height: px(spec.box) });
       }
       const widest = Math.max(...rows.map(({ tx }) => tx.getBoundingClientRect().width));
@@ -260,14 +296,13 @@ function checkRows(items, spec) {
         yy += r.offsetHeight + (spec.gap ?? 14);
       }
     },
-    frame(t, starts, tHide = Infinity) {
-      rows.forEach(({ r, svg }, i) => {
-        const p = progress(t, starts[i], 0.4, ease.outQuart);
-        const k = progress(t, starts[i] + 0.12, 0.25, ease.outCubic);
-        r.style.transform = `translateX(${((1 - p) * -40).toFixed(2)}px)`;
-        r.style.clipPath = `inset(0 ${((1 - p) * 100).toFixed(2)}% 0 0)`;
+    frame(t, starts, hide = Infinity) {
+      rows.forEach(({ r, inner, svg }, i) => {
+        const p = progress(t, starts[i], 0.42, ease.outQuart);
+        const k = progress(t, starts[i] + 0.16, 0.25, ease.outCubic);
+        inner.style.transform = `translateY(${((1 - p) * 110).toFixed(2)}%)`;
         svg.style.transform = `scale(${k.toFixed(3)})`;
-        show(r, p > 0 && t < tHide);
+        show(r, p > 0 && t < hide);
       });
     },
   };
@@ -275,13 +310,17 @@ function checkRows(items, spec) {
 
 // ---- scenes ----
 const layers = {
-  hook: photoLayer({ before: '11_before', focus: [0.5, 0.42], seed: 3 }),
+  hook: photoLayer({ before: '11_before', focus: [0.5, 0.42], seed: 3, punch: { at: T.punch, amt: 0.06, dur: 0.6 } }),
   s2: photoLayer({ before: '08_before', after: '08_after', focus: [0.45, 0.45], seed: 5 }),
   s4a: photoLayer({ before: '04_before', after: '04_after', focus: { vertical: [0.4, 0.55], square: [0.4, 0.62], landscape: [0.4, 0.55] }, seed: 7 }),
   s4b: photoLayer({ before: '09_before', after: '09_after', focus: [0.5, 0.45], seed: 9, reveal: 'y' }),
   s4c: photoLayer({ before: '06_before', after: '06_after', focus: { vertical: [0.62, 0.5], square: [0.6, 0.5], landscape: [0.75, 0.5] }, seed: 11, reveal: 'split' }),
   s4d: photoLayer({ before: '07_before', after: '07_after', focus: { vertical: [0.5, 0.35], square: [0.5, 0.3], landscape: [0.5, 0.4] }, seed: 13 }),
-  s5: photoLayer({ before: '10_before', focus: { vertical: [0.55, 0.45], square: [0.55, 0.5], landscape: [0.5, 0.45] }, seed: 15, z1: 1.08 }),
+  s5: gridLayer([
+    { name: '08_before', focus: [0.5, 0.45] },
+    { name: '04_before', focus: [0.45, 0.5] },
+    { name: '09_before', focus: [0.5, 0.45] },
+  ]),
 };
 
 const headline = (lines) => textLines('lines', lines, L.headline.size, L.headline.lineHeight);
@@ -295,7 +334,12 @@ const kA = kickerTag('SYSTEM RESTORATION');
 const kB = kickerTag('MAY INCLUDE');
 const evHead = headline(COPY.evidenceHead);
 const evidence = textLines('sentence', perFormat(COPY.evidence), L.statement.size, L.statement.lineHeight);
-const statement = textLines('sentence', COPY.statement, L.statement.size, L.statement.lineHeight);
+const statement = headline(COPY.statement);
+// "AUTOMATIC ANSWER." gets a red copy on top that wipes in left to right.
+const flipLine = statement.spans[3];
+flipLine.classList.add('flip');
+const flip = el('span', 'flip-red', flipLine);
+flip.textContent = COPY.statement[3];
 
 // Three paths, set as headline lines. On the highlight beat the middle one fills red and the
 // others dim; then it shrinks and rises into the kicker slot, easing its width, weight, tracking
@@ -338,9 +382,10 @@ function arrange() {
   for (const k of [kA, kB]) k.fit(tw);
   const kickH = kA.height + L.kicker.gap;
 
-  for (const h of [hook, third, h4a, h4b, h4c, evHead]) h.fit(tw);
+  for (const h of [hook, third, h4a, h4b, h4c, evHead, statement]) h.fit(tw);
   hook.at(L.text.x, anchorTop(hook.height), tw);
   third.at(L.text.x, anchorTop(third.height), tw);
+  statement.at(L.text.x, anchorTop(statement.height), tw);
 
   // 4a-4d share one kicker slot, so the kicker never jumps between scenes.
   checklist.fit(tw);
@@ -355,8 +400,6 @@ function arrange() {
   const evTop = anchorTop(evHead.height + evGap + evidence.height);
   evHead.at(L.text.x, evTop, tw);
   evidence.at(L.text.x, evTop + evHead.height + evGap, tw);
-  statement.fit(tw);
-  statement.at(L.text.x, anchorTop(statement.height), tw);
 
   // Three paths: one size for all three rows, as large as the column allows.
   const style = (r, size, stretch, weight, track, pad) => Object.assign(r.style, {
@@ -441,43 +484,46 @@ function logoFrame(t) {
 }
 
 function endFrame(t) {
-  const on = t >= T.end;
-  offer.frame(t, on ? T.offer : Infinity);
+  offer.frame(t, T.end, { from: T.end });
   endChecks.frame(t, T.checks);
   const b = progress(t, T.button, 0.38, ease.outQuart);
   button.style.clipPath = `inset(0 ${((1 - b) * 100).toFixed(2)}% 0 0)`;
   button.style.transform = `translateX(${((1 - b) * -30).toFixed(2)}px)`;
   show(button, b > 0);
-  url.frame(t, on ? T.url : Infinity);
+  url.frame(t, T.url, { from: T.end });
 }
 
 function seek(t) {
   t = clamp(t, 0, DURATION);
-  const swipe = progress(t, T.swipe, 0.42, ease.inOutCubic);
+  const push = progress(t, T.swipe, PUSH, ease.inOutCubic);
+  const tw = L.text.w;
 
-  layers.hook(t, { on: t < T.swipe + 0.42, t0: 0, t1: T.swipe, dx: -0.3 * BW * swipe });
+  layers.hook(t, { on: t < T.swipe + PUSH, t0: 0, t1: T.swipe, dx: -push * BW });
   layers.s2(t, {
-    on: t >= T.swipe && t < T.s4a, t0: T.swipe, t1: T.s4a, dx: (1 - swipe) * BW,
+    on: t >= T.swipe && t < T.s4a, t0: T.swipe, t1: T.s4a, dx: (1 - push) * BW,
     move: { start: T.sweep2, dur: SWEEP }, dimAmt: 0.5 * progress(t, T.paths, 0.5, ease.inOutSine),
   });
   layers.s4a(t, { on: t >= T.s4a && t < T.s4b, t0: T.s4a, t1: T.s4b, move: { start: T.sweep4a, dur: SWEEP } });
   layers.s4b(t, { on: t >= T.s4b && t < T.s4c, t0: T.s4b, t1: T.s4c, move: { start: T.sweep4b, dur: SWEEP } });
   layers.s4c(t, { on: t >= T.s4c && t < T.s4d, t0: T.s4c, t1: T.s4d, move: { start: T.split4c, dur: SPLIT } });
-  layers.s4d(t, { on: t >= T.s4d && t < T.s5a, t0: T.s4d, t1: T.s5a, move: { start: T.sweep4d, dur: 1.2 } });
+  layers.s4d(t, { on: t >= T.s4d && t < T.s5a, t0: T.s4d, t1: T.s5a, move: { start: T.sweep4d, dur: SWEEP_4D } });
   layers.s5(t, { on: t >= T.s5a && t < T.end, t0: T.s5a, t1: T.end, dimAmt: 0.72 * progress(t, T.s5b, 0.45, ease.inOutSine) });
 
-  hook.frame(t, -1, T.swipe - 0.28);
-  third.frame(t, T.swipe + 0.04, T.paths - 0.36);
+  // The hook's text pushes out with its photo as scene 2 pushes in; after that, each text change
+  // happens on the cut (or the beat) that changes the scene, so no beat lands on an empty frame.
+  hook.frame(t, -1, { hide: T.swipe + PUSH, dx: -push * tw });
+  third.frame(t, -1, { from: T.swipe, hide: T.paths, dx: (1 - push) * tw });
   pathsFrame(t);
-  kA.frame(t, T.s4a, T.s4b - 0.22, true);
-  h4a.frame(t, T.s4a + 0.04, outBefore(T.s4b, 2), T.s4b);
-  kB.frame(t, T.s4b + 0.06, t >= T.s5a ? -Infinity : Infinity);
-  h4b.frame(t, T.s4b + 0.04, outBefore(T.s4c, 3), T.s4c);
-  h4c.frame(t, T.s4c + 0.04, outBefore(T.s4d, 3), T.s4d);
+  kA.frame(t, T.s4a, T.s4b, true);
+  h4a.frame(t, T.s4a, { hide: T.s4b });
+  kB.frame(t, T.s4b, T.s5a);
+  h4b.frame(t, T.s4b, { hide: T.s4c });
+  h4c.frame(t, T.s4c, { hide: T.s4d });
   checklist.frame(t, T.rows4d, T.s5a);
-  evHead.frame(t, T.s5a + 0.06, outBefore(T.s5b, 2), T.s5b);
-  evidence.frame(t, T.sentence5a, outBefore(T.s5b, perFormat(COPY.evidence).length), T.s5b);
-  statement.frame(t, [T.s5b, T.s5b + 0.08, T.line2, T.line2 + 0.08], Infinity, T.end);
+  evHead.frame(t, T.s5a + 0.06, { hide: T.s5b });
+  evidence.frame(t, T.sentence5a, { hide: T.s5b });
+  statement.frame(t, [T.s5b, T.s5b + 0.08, T.half5b, T.half5b + 0.08], { hide: T.end });
+  flip.style.clipPath = `inset(0 ${((1 - progress(t, T.flip5b, 0.3, ease.outCubic)) * 100).toFixed(2)}% 0 0)`;
 
   wipeFrame(t);
   logoFrame(t);

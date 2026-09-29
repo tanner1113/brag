@@ -70,3 +70,79 @@ Verdict: ANOTHER ROUND
 - Audio: master ceiling −2.0 dBTP, so the delivered files measure −14.1 LUFS and −1.5 dBTP. Sound cues follow the new moves: a falling sweep for 4b, air panning in from the right for the 4c split, and the end card ticks on their new beats.
 
 **Re-rendered:** all three formats in full (a 29.6 s render takes about 50 s). `check-badge.py`: header band untouched until 25.2 s in all three.
+
+## Round 2 · Sep 28, 2026 · fresh reviewer
+
+### vertical (9x16)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 6 | 6 | 7 | 6 | 8 | 8 |
+
+Evidence for the 8s: the badge sits in the header band from 0.00 and both red curtains stop under it (strips 18.40–18.63, 24.97–25.33). "$85" appears only in the offer, and there are no corner tags or brackets. BEFORE/AFTER ride the divider, and no banned equipment shows in any tile. Audio: −14.1 LUFS, −1.5 dBTP, silent last 50 ms; the hard cuts land on the first frame after each measured beat.
+
+Worst three problems, worst first:
+1. **[00:22.34–00:25.09]** The thesis, "Replacement may be the right answer. It shouldn't be the automatic answer.", is small sentence-case text, and its payoff "automatic answer." is #D51E30 on #111 (about 3.6:1). Lines 3–4 are settled only about 1.5 s. **Fix:** make 5b a Display 900 headline block, bring lines 3–4 in on the half-beat (22.62), and turn AUTOMATIC ANSWER. red on the 22.900 downbeat. **Re-render:** 22.3–25.1 s.
+2. **[00:03.27–00:05.30]** "YOU MAY HAVE A THIRD OPTION." is settled about 1.4 s (0.23 s a word) while the sweep pulls the eye away. **Fix:** start scene 2 a beat earlier (2.69) and leave the sweep on 3.784. **Re-render:** 2.5–5.5 s.
+3. **[00:00.00–00:25.09]** Every scene is one template (header band, a photo strip a third of the frame tall, kicker and headline on flat black, the same mask-rise), so two thirds of every frame is flat black and the evidence never gets bigger than a strip. **Fix:** grow the photo to about half the frame with the text over its feathered base, give 5a a different layout, and replace some mask-rises with moves driven by the content. **Re-render:** 0–25.1 s.
+
+Verdict: ANOTHER ROUND
+
+### square (1x1)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 7 | 6 | 7 | 6 | 8 | 8 |
+
+Evidence for the 8s: as vertical (header clear above both curtains, cuts on 7.633 and 12.000, curtains fully covering at 18.500 and 25.100).
+
+Worst three problems, worst first:
+1. **[00:22.34–00:25.09]** The thesis sits as four small caption lines, and lines 3–4 get about 1.5 s. **Fix:** as vertical. **Re-render:** 22.3–25.1 s.
+2. **[00:03.27–00:05.30]** THIRD OPTION. is settled about 1.4 s. **Fix:** as vertical. **Re-render:** 2.5–5.5 s.
+3. **[00:07.62–00:25.09]** Every scene after the hook is built the same way, and the same flat red curtain is used at 18.30 and 24.86. **Fix:** change the 5a layout and replace the second curtain with a different move. **Re-render:** 7.6–25.3 s.
+
+Verdict: ANOTHER ROUND
+
+### landscape (16x9)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 7 | 4 | 7 | 6 | 8 | 8 |
+
+Evidence for the 8s: as vertical (badge top-left in the header band at frame 0, the header clear above both curtains, no banned equipment in any tile).
+
+Worst three problems, worst first:
+1. **[00:03.78–00:29.60]** In the 360-px test everything below headline size is barely legible (checklist, 5a sentence, 5b, end card checks, button, URL), and the kickers, BEFORE/AFTER and "BOOK" can't be read. **Fix:** widen the text column to start at about 46% of the width, scale the secondary type up about 1.5 times, and set chips and "BOOK" much larger. **Re-render:** 3.7–29.6 s.
+2. **[00:22.34–00:25.09]** The thesis is caption-size, with about 1.5 s settled. **Fix:** as vertical. **Re-render:** 22.3–25.1 s.
+3. **[00:03.27–00:05.30]** THIRD OPTION. is settled about 1.4 s. **Fix:** as vertical. **Re-render:** 2.5–5.5 s.
+
+Verdict: ANOTHER ROUND
+
+**Other problems the reviewer noticed (all formats unless marked):**
+- **[00:00.00–00:03.27]** The hook is a static card, with nothing happening on the 1.079 downbeat.
+- **[00:14.17–00:14.85], [00:25.63–00:26.00]** Check rows are revealed by a left-to-right mask that freezes on partial words ("Performa"), which reads like the banned type-on look.
+- **[00:18.30], [00:24.86]** The same red curtain twice. The final hit lands on a blank red frame.
+- **[00:09.00], [00:15.80–00:16.30]** BEFORE/AFTER caught half-faded.
+- **Every text change** has 2–4 blank frames on the beat.
+- **[00:26.18–00:29.60]** The phone number and "BOOK" are third-tier type.
+- **[00:18.60–00:25.00]** Photo 10 holds 6.4 s and reads as louvers beside a tan wall, not a packed coil.
+- **Header badge:** only the "D" reads at 360 px.
+- **Landscape:** the end card logo outranks the offer.
+
+The author checked each claim against the round 2 images before acting on it.
+
+**Fixed this round (one timeline, all formats):**
+- 5b is a Display 900 headline. Lines 3–4 come in on the half-beat (22.62), and "AUTOMATIC ANSWER." turns red with a left-to-right wipe on the build downbeat (22.90), with a soft tick. Lines 3–4 now settle about 1.8 s.
+- Scene 2 starts a beat earlier (2.69) as a push: the photo and the hook's text slide out left as the new photo and "YOU MAY HAVE A THIRD OPTION." slide in from the right, each inside its own region. The line is now settled 3.11–5.44 s (0.39 s a word).
+- Vertical photo band 372–1312 px (square 146–746) feathering out under the top of the text block, with a tight drop shadow on type where it crosses the feather (RULES.md limits).
+- The hook photo punches in on the 1.079 downbeat (1.00→1.06).
+- 5a is a new layout: before photos from three of the jobs (08, 04, 09) side by side (stacked in landscape), revealed by the wipe. Photo 10 is no longer used.
+- The end card arrives on a hard cut on the final hit instead of a second curtain. The badge sets off on the cut and the offer is already rising.
+- Every text change now happens on its cut or beat: the old block holds until the cut and the new one rises from it, so no beat lands on an empty text area.
+- Check rows rise out of masks like the headlines; no partial words.
+- BEFORE/AFTER ride in and out with the divider, which now starts and ends off the frame (sine-eased sweeps, 1.3 s; 4d 1.4 s). There are no fades.
+- Phone type: kickers 50/46/76 px and labels 50/46/64 px (vertical/square/landscape). "BOOK" is the same size as the phone number, and the button is larger (72/60/88 px).
+- Landscape: text column 900–1824 px, headlines 120 px, secondary type 84 px, and a smaller end card logo with the offer in a 1064 px column.
+- Badge 250/190/200 px wide (was 220/170/180).
+
+**Re-rendered:** all three formats in full. `npm test` (24 checks) and lint pass. `check-badge.py`: header band untouched until the end card cut (25.086 s) in all three. Loudness −14.1 LUFS, true peak −1.6 dBTP.

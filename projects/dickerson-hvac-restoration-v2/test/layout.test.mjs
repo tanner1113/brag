@@ -1,8 +1,8 @@
-// Checks every format's layout without rendering: `npm test` (node --test test/layout.test.mjs).
+// Checks every format's layout and the timing without rendering: `npm test` (node --test test/layout.test.mjs).
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { FORMATS, cover, layout, lerpBox } from '../composition/layout.js';
-import { DURATION, FPS, T, outBefore, travel, wipeSpan } from '../composition/timing.js';
+import { FORMATS, cover, layout, lerpBox, tiles } from '../composition/layout.js';
+import { DURATION, FPS, T, travel, wipeSpan } from '../composition/timing.js';
 
 const inside = (b, r) => b.x >= r.x && b.y >= r.y && b.x + b.w <= r.x + r.w && b.y + b.h <= r.y + r.h;
 const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -47,13 +47,23 @@ for (const format of Object.keys(FORMATS)) {
       assert.ok(!overlaps(b, w), `the wipe reaches the badge at ${t.toFixed(3)} s`);
     }
     assert.equal(travel(0), 0);
+    assert.ok(travel(T.end - 1 / FPS) === 0, 'the badge leaves the header band before the end card');
   });
 
-  test(`${format}: end card parts don't overlap and the badge can travel to the logo`, () => {
-    const parts = Object.values(L.end).filter((b) => b.x >= L.text.x - 1 || format !== 'landscape').sort((a, b) => a.y - b.y);
+  test(`${format}: end card parts stack without overlapping, and the logo clears them`, () => {
+    const { logo, ...rest } = L.end;
+    const parts = Object.values(rest).sort((a, b) => a.y - b.y);
     for (let i = 1; i < parts.length; i++) assert.ok(parts[i].y >= parts[i - 1].y + parts[i - 1].h, `end parts ${i - 1}/${i} overlap`);
-    const mid = lerpBox(L.badge, L.end.logo, 0.5);
-    assert.ok(inside(mid, frame));
+    for (const p of parts) assert.ok(!overlaps(logo, p), `the end card logo overlaps ${JSON.stringify(p)}`);
+    assert.ok(inside(lerpBox(L.badge, logo, 0.5), frame));
+  });
+
+  test(`${format}: the evidence tiles fill the photo band with even gaps`, () => {
+    const along = L.grid.axis === 'x' ? L.photo.w : L.photo.h;
+    const cells = tiles(along, 3, L.grid.gap);
+    assert.equal(cells[0].at, 0);
+    assert.ok(Math.abs(cells[2].at + cells[2].size - along) < 1e-9);
+    assert.ok(Math.abs(cells[1].at - (cells[0].size + L.grid.gap)) < 1e-9);
   });
 }
 
@@ -74,13 +84,6 @@ test('cover fills the region and keeps the focal point in view', () => {
         assert.ok(c.x + c.w >= region.x + region.w - 1e-6 && c.y + c.h >= region.y + region.h - 1e-6, 'uncovered edge');
       }
     }
-  }
-});
-
-test('text blocks are gone before the hard cuts they precede', () => {
-  for (const [cut, lines] of [[T.s4b, 2], [T.s4c, 3], [T.s4d, 3], [T.s5b, 3]]) {
-    const lastGone = outBefore(cut, lines) + 0.04 * (lines - 1) + 0.25;
-    assert.ok(lastGone <= cut - 1 / FPS, `a ${lines}-line block is still leaving at the cut at ${cut} s`);
   }
 });
 

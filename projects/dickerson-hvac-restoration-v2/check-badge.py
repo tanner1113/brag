@@ -5,8 +5,8 @@
     python check-badge.py out/stills/9x16/*.png  # exact check on rendered stills
 
 The badge lives in a header band that no transition enters. So from frame 0 until the badge
-starts its travel into the end card logo (25.2 s), nothing may ever draw in that band. After
-that, `npm test` proves geometrically that no wipe ever reaches the travelling badge.
+starts its travel into the end card logo (25.086 s, the cut to the end card), nothing may ever
+draw in that band. `npm test` also proves geometrically that no wipe ever reaches the badge.
 
 - Stills (PNG, straight from the renderer) must match each other exactly.
 - Encoded frames carry H.264 noise on the logo's thin wordmark (a few dozen pixels, up to about
@@ -25,11 +25,11 @@ import numpy as np
 
 # Header band and badge box per render size (composition/layout.js), and the travel start.
 BANDS = {
-    (1080, 1920): ((0, 0, 1080, 362), (90, 228, 220, 116)),
-    (1080, 1080): ((0, 0, 1080, 138), (60, 36, 170, 90)),
-    (1920, 1080): ((0, 0, 1920, 150), (96, 38, 180, 95)),
+    (1080, 1920): ((0, 0, 1080, 362), (90, 222, 250, 132)),
+    (1080, 1080): ((0, 0, 1080, 138), (60, 32, 190, 100)),
+    (1920, 1080): ((0, 0, 1920, 150), (96, 30, 200, 106)),
 }
-TRAVEL_START = 25.2  # composition/timing.js T.travel
+TRAVEL_START = 25.086  # composition/timing.js T.travel
 HARD_LIMIT = 110
 NOISE_LEVEL = 32
 NOISE_SHARE = 0.002

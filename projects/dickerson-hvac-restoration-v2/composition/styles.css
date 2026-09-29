@@ -36,10 +36,14 @@ html, body { background: var(--bg); overflow: hidden; }
 .band { overflow: hidden; z-index: 1; }
 .band .layer, .band .half, .band img, .band .divider, .band .tag, .band .dim { position: absolute; }
 .band img { max-width: none; }
-.band .half { overflow: hidden; }
+.band .layer, .band .half { overflow: hidden; }
 .band .dim { background: var(--bg); }
-.fade-bottom { -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent); mask-image: linear-gradient(to bottom, #000 76%, transparent); }
-.fade-right { -webkit-mask-image: linear-gradient(to right, #000 78%, transparent); mask-image: linear-gradient(to right, #000 78%, transparent); }
+/* The band feathers out under the top of the text block (vertical, square) or before the text column. */
+.fade-bottom {
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, rgba(0, 0, 0, 0.5) 74%, transparent 97%);
+  mask-image: linear-gradient(to bottom, #000 58%, rgba(0, 0, 0, 0.5) 74%, transparent 97%);
+}
+.fade-right { -webkit-mask-image: linear-gradient(to right, #000 84%, transparent); mask-image: linear-gradient(to right, #000 84%, transparent); }
 
 .divider { background: var(--text); }
 .tag {
@@ -54,6 +58,9 @@ html, body { background: var(--bg); overflow: hidden; }
 .tag.red { background: var(--red); }
 
 .lines, .sentence { z-index: 2; }
+/* A tight dark shadow where type crosses the photo's feather (RULES.md: blur <= 18 px, <= 55%).
+   On the block, not the glyphs, so the line masks don't clip it. */
+.lines, .sentence, .path, .check-row { filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)); }
 .lines {
   font-family: 'Noto Sans Display', sans-serif;
   font-weight: 900;
@@ -63,8 +70,9 @@ html, body { background: var(--bg); overflow: hidden; }
 }
 .sentence { font-weight: 700; letter-spacing: -0.005em; }
 .mask { overflow: hidden; white-space: nowrap; }
-.mask > span { display: inline-block; }
+.mask > span { display: inline-block; position: relative; }
 .accent { color: var(--red-text); }
+.flip-red { position: absolute; left: 0; top: 0; color: var(--red-text); white-space: nowrap; }
 
 .kicker {
   z-index: 2;
@@ -92,7 +100,8 @@ html, body { background: var(--bg); overflow: hidden; }
 .path .fill { position: absolute; inset: 0; background: var(--red); }
 .path span { position: relative; }
 
-.check-row { z-index: 2; display: flex; align-items: center; white-space: nowrap; }
+.check-row { z-index: 2; overflow: hidden; }
+.check-inner { display: flex; align-items: center; white-space: nowrap; }
 .check-row .cbox { position: relative; flex: none; background: var(--red); }
 .check-row .cbox svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .check-row .txt { font-weight: 700; white-space: pre; line-height: 1.1; }
@@ -106,7 +115,7 @@ html, body { background: var(--bg); overflow: hidden; }
   background: var(--red);
   white-space: nowrap;
 }
-.button .book { font-weight: 700; letter-spacing: 0.08em; font-size: 0.75em; line-height: 1; }
+.button .book { font-weight: 700; letter-spacing: 0.06em; line-height: 1; }
 .button .phone { font-weight: 700; line-height: 1; }
 .url { z-index: 2; font-weight: 600; line-height: 1.2; }
 
