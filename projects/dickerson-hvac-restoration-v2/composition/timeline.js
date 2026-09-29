@@ -1,11 +1,11 @@
-// Dickerson Services, HVAC System Restoration, v2: one timeline, three native formats.
+// Dickerson Services, HVAC System Restoration, v3: one timeline, three native formats.
 // Everything on screen is a pure function of t in seconds: window.seek(t) sets it, and nothing
 // else moves anything. Shots, copy and times follow docs/shotlist.md; the times live in
 // timing.js, and every scene change sits on a measured beat from work/beats.json.
 // Preview: /composition/index.html?format=square&t=4.2 (add &guides=1 to outline the layout boxes).
 import { cover, layout, lerpBox, tiles } from './layout.js';
 import { clamp, ease, lerp, noise, progress } from './motion.js';
-import { DURATION, FPS, PRE, PUSH, SPLIT, SWEEP, SWEEP_4D, T, travel, wipeSpan } from './timing.js';
+import { BUTTON, DURATION, FPS, PRE, PUSH, SPLIT, SWEEP, SWEEP_4D, T, pushP, travel, wipeSpan } from './timing.js';
 
 const params = new URLSearchParams(location.search);
 const FORMAT = params.get('format') || 'vertical';
@@ -319,15 +319,25 @@ function checkRows(items, spec) {
 // ---- scenes ----
 const layers = {
   hook: photoLayer({ before: '11_before', focus: [0.5, 0.42], seed: 3, punch: { at: T.punch, amt: 0.06, dur: 0.6 } }),
-  s2: photoLayer({ before: '08_before', after: '08_after', focus: [0.45, 0.45], seed: 5 }),
+  // Outdoor unit, exterior wash. A true pair (same unit, matched framing).
+  s2: photoLayer({ before: '19_before', after: '20_after', focus: [0.5, 0.4], seed: 5 }),
   s4a: photoLayer({ before: '04_before', after: '04_after', focus: { vertical: [0.4, 0.55], square: [0.4, 0.62], landscape: [0.4, 0.55] }, seed: 7 }),
-  s4b: photoLayer({ before: '09_before', after: '09_after', focus: [0.5, 0.45], seed: 9, reveal: 'y' }),
+  // Outdoor unit, leaf clean-out inside the condenser. A true pair; the angle differs, so the
+  // wipe compares the debris with the cleaned pan rather than a locked-off match.
+  s4b: photoLayer({ before: '17_before', after: '18_after', focus: [0.48, 0.52], seed: 9, reveal: 'y' }),
   s4c: photoLayer({ before: '06_before', after: '06_after', focus: { vertical: [0.62, 0.5], square: [0.6, 0.5], landscape: [0.75, 0.5] }, seed: 11, reveal: 'split' }),
   s4d: photoLayer({ before: '07_before', after: '07_after', focus: { vertical: [0.5, 0.35], square: [0.5, 0.3], landscape: [0.5, 0.4] }, seed: 13 }),
+  // Two dirty blower wheels from the evidence, side by side (stacked in landscape). No divider
+  // and no BEFORE/AFTER: they are not a pair, and 23 (a clean wheel from another job) is not here.
+  blowers: gridLayer([
+    { name: '22_blower', focus: [0.42, 0.68] },
+    { name: '21_blower', focus: [0.62, 0.48] },
+  ], { seed: 17, z1: 1.06 }),
+  // Before shots of the three parts: outdoor unit, blower, coil.
   s5: gridLayer([
-    { name: '08_before', focus: [0.5, 0.45] },
+    { name: '19_before', focus: [0.5, 0.4] },
+    { name: '22_blower', focus: [0.42, 0.68] },
     { name: '04_before', focus: [0.45, 0.5] },
-    { name: '09_before', focus: [0.5, 0.45] },
   ]),
 };
 
@@ -486,7 +496,8 @@ function logoFrame(t) {
   for (const img of [badge, silver]) {
     Object.assign(img.style, { left: px(b.x), top: px(b.y), width: px(b.w), height: px(b.w * img.naturalHeight / img.naturalWidth) });
   }
-  const mix = clamp((p - 0.2) / 0.6);
+  // The silver lockup comes in with the move. Waiting for p>0.2 left the badge looking stuck.
+  const mix = clamp((p - 0.05) / 0.62);
   badge.style.opacity = String(1 - mix);
   silver.style.opacity = String(mix);
   show(silver, mix > 0);
@@ -496,16 +507,18 @@ function logoFrame(t) {
 function endFrame(t) {
   offer.frame(t, T.end - 0.1, { from: T.end });
   endChecks.frame(t, T.checks, { from: T.end });
-  const b = progress(t, T.button, 0.38, ease.outQuart);
-  button.style.clipPath = `inset(0 ${((1 - b) * 100).toFixed(2)}% 0 0)`;
-  button.style.transform = `translateX(${((1 - b) * -30).toFixed(2)}px)`;
+  // The button settles a few pixels, whole. A left-to-right clip drew "BOOK 256-203-" for
+  // about five frames; the phone number is fully painted on every frame it is visible.
+  const b = progress(t, T.button, BUTTON, ease.outCubic);
+  button.style.clipPath = 'none';
+  button.style.transform = `translateY(${((1 - b) * 10).toFixed(2)}px)`;
   show(button, b > 0);
   url.frame(t, T.url, { from: T.end });
 }
 
 function seek(t) {
   t = clamp(t, 0, DURATION);
-  const push = progress(t, T.swipe, PUSH, ease.inOutCubic);
+  const push = pushP(t);
   const tw = L.text.w;
 
   layers.hook(t, { on: t < T.swipe + PUSH, t0: 0, t1: T.swipe, dx: -push * BW });
@@ -516,7 +529,8 @@ function seek(t) {
   layers.s4a(t, { on: t >= T.s4a && t < T.s4b, t0: T.s4a, t1: T.s4b, move: { start: T.sweep4a, dur: SWEEP } });
   layers.s4b(t, { on: t >= T.s4b && t < T.s4c, t0: T.s4b, t1: T.s4c, move: { start: T.sweep4b, dur: SWEEP } });
   layers.s4c(t, { on: t >= T.s4c && t < T.s4d, t0: T.s4c, t1: T.s4d, move: { start: T.split4c, dur: SPLIT } });
-  layers.s4d(t, { on: t >= T.s4d && t < T.s5a, t0: T.s4d, t1: T.s5a, move: { start: T.sweep4d, dur: SWEEP_4D } });
+  layers.s4d(t, { on: t >= T.s4d && t < T.blowers, t0: T.s4d, t1: T.blowers, move: { start: T.sweep4d, dur: SWEEP_4D } });
+  layers.blowers(t, { on: t >= T.blowers && t < T.s5a, t0: T.blowers, t1: T.s5a });
   layers.s5(t, { on: t >= T.s5a && t < T.end, t0: T.s5a, t1: T.end, dimAmt: 0.72 * progress(t, T.s5b, 0.45, ease.inOutSine) });
 
   // The hook's text pushes out with its photo as scene 2 pushes in; after that, each text change

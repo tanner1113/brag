@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the display crops and logos the composition loads, from the client asset bundle.
 
-    python prep-assets.py /path/to/restoration-assets.tar.gz
+    python prep-assets.py /path/to/restoration-assets-v3.tar.gz
 
 Writes assets/photos/*.png and assets/brand/*.png. assets/ and work/ are gitignored: this repo
 is public and the photos and logos belong to the client.
@@ -11,9 +11,15 @@ exposed line sets. Photos 01-03 are excluded outright. Every window below was ch
 the whole source photo, and the composition's per-format framing only ever shows part of a
 window, so a clean window means a clean crop in every format.
 
-Each before/after pair uses one window for both halves (the slider compares like with like),
-clear of the baked-in logo badge, BEFORE/AFTER labels and CompanyCam watermark. Both halves get
-identical scaling and sharpening; no color changes.
+Each before/after pair from one file uses one window for both halves (the slider compares like
+with like), clear of the baked-in logo badge, BEFORE/AFTER labels and CompanyCam watermark.
+17/18 and 19/20 are separate files of one unit; each pair shares one window size and the same
+scaling and sharpening. No color changes.
+
+v3 additions (see refs/V3_PHOTO_ADDENDUM.md in the bundle): 17-18 condenser interior, 19-20
+outdoor cabinet wash, 21 and 22 dirty blower wheels, 23 a clean blower from a different job.
+22's window starts clear of the blurry wires at the lower left. 23 is cropped so it can be
+shown as its own close-up; the timeline must not wipe it from 21 or 22 or label that pair.
 """
 from __future__ import annotations
 
@@ -56,6 +62,23 @@ SINGLES = {
     # (and the badge), and y<=575 stops above the BEFORE label (y>=585) while keeping the unit's
     # rim, its matted coil and the weeds on the right.
     "11_before": ("11_", 450, 0, 990, 575, "open control box wiring, badge, BEFORE label"),
+    # 19 and 20 are separate files, near-identical framing of one packaged condenser. The shared
+    # window keeps the fan and the washed top and drops the shuttered window, the disconnect,
+    # and the line-set stub at the pad (lower left of the full frame).
+    "19_before": ("19_", 300, 370, 760, 580,
+                  "shuttered window, electrical disconnect, pad line-set stub"),
+    "20_after": ("20_", 300, 370, 760, 580, "same window as 19"),
+    # 17 (1440x1080) and 18 (1080x1440) are the same condenser, top off, different angle.
+    # Internal compressor piping stays: it is the inside of the outdoor unit, not a line set
+    # run to a wall head.
+    "17_before": ("17_", 0, 0, 1440, 1080, "full interior; leaves and compressor"),
+    "18_after": ("18_", 40, 140, 1000, 1120, "clean base pan and compressor; same visit as 17"),
+    # Dirty blower close-up. The right edge is outdoor foliage and a red surface; both stay out.
+    "21_blower": ("21_", 0, 20, 1180, 1040, "foliage and the red edge at the right"),
+    # Dirty blower in the cabinet. The blurry wires occupy about x<280 and y>1040.
+    "22_blower": ("22_", 300, 160, 760, 860, "blurry wires at the lower left"),
+    # Clean blower from a different job than 21/22. Cropped for a close-up only.
+    "23_blower": ("23_", 80, 180, 960, 1120, "clean wheel; not a match for 21 or 22"),
 }
 EXCLUDED = ("01_", "02_", "03_")  # read as a ductless wall head: never used
 
@@ -111,6 +134,11 @@ def main() -> int:
     (OUT / "brand").mkdir(parents=True)
     with tarfile.open(sys.argv[1]) as tar:
         tar.extractall(SRC, filter="data")
+
+    # 22's blurry wires sit at x<280 and y>1040. The window has to keep them out in every format.
+    bx, by, bw, bh = SINGLES["22_blower"][1:5]
+    if bx < 280 or by + bh > 1040:
+        sys.exit("prep-assets: photo 22 window includes the blurry wires at the lower left")
 
     for pid, (prefix, (bx, by), (ax, ay), w, h, _why) in PAIRS.items():
         src = source(prefix)

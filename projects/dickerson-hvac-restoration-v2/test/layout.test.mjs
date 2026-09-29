@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { FORMATS, cover, layout, lerpBox, tiles } from '../composition/layout.js';
-import { DURATION, FPS, T, travel, wipeSpan } from '../composition/timing.js';
+import { DURATION, FPS, SWEEP_4D, T, pushP, travel, wipeSpan } from '../composition/timing.js';
 
 const inside = (b, r) => b.x >= r.x && b.y >= r.y && b.x + b.w <= r.x + r.w && b.y + b.h <= r.y + r.h;
 const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -89,4 +89,18 @@ test('cover fills the region and keeps the focal point in view', () => {
 
 test('unknown formats are rejected', () => {
   assert.throws(() => layout('portrait'), /unknown format/);
+});
+
+test('the push and the end-card logo move on the first frame', () => {
+  // Out-cubic. The v2 in-out ease was still under a few pixels two frames after the beat.
+  const frame = 1 / FPS;
+  assert.ok(pushP(T.swipe + frame) > 0.04, 'scene 2 push is still eased in');
+  assert.ok(travel(T.travel + frame) > 0.04, 'logo travel is still eased in');
+  assert.equal(pushP(T.swipe), 0);
+  assert.equal(travel(T.end - frame), 0);
+});
+
+test('the coil sweep finishes on the blower cut', () => {
+  assert.ok(T.blowers > T.s4d && T.blowers < T.s5a);
+  assert.ok(Math.abs(T.sweep4d + SWEEP_4D - T.blowers) < 0.002);
 });

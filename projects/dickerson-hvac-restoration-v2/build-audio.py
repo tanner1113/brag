@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Soundtrack for the v2 restoration video: a beat-aligned edit of one bundled track, plus sound
+"""Soundtrack for the v3 restoration video: a beat-aligned edit of one bundled track, plus sound
 effects synthesized in the track's key and mixed with it as one piece.
 
     python build-audio.py   ->  work/audio/{music,sfx,mix}.wav
@@ -237,7 +237,7 @@ def cue_sheet():
     return [
         # (start of the on-screen move, sound, level dB, reverb send)
         (1.079, air(0.6, 'outQuart', 220, 900, width=0.6), D(-40), 0.1),  # the hook photo punches in on the downbeat
-        (2.690, air(0.42, 'inOutCubic', 320, 2600, pan=(0.55, -0.55)), D(-32), 0.12),  # scene 2 pushes in from the right
+        (2.690, air(0.42, 'outCubic', 320, 2600, pan=(0.55, -0.55)), D(-32), 0.12),  # scene 2 pushes in from the right (out-cubic, with the picture)
         (3.784, sweep(1.3), D(-35), 0.1),  # slider sweep
         (5.445, air(0.40, 'outQuart', 500, 2200, width=0.7), D(-38), 0.1),  # three paths rise in
         (6.524, mallet([523.25, 880.00], decay=0.14), D(-24), 0.3),  # "System Restoration" lights up (C5+A5 over F)
@@ -248,15 +248,16 @@ def cue_sheet():
         (14.169, mallet([523.25]), D(-24), 0.3),  # checklist rows tick C5 E5 G5 (C bar)
         (14.442, mallet([659.25]), D(-24), 0.3),
         (14.715, mallet([783.99]), D(-25), 0.3),
-        (15.789, sweep(1.4), D(-36), 0.1),
+        (15.260, sweep(1.091), D(-36), 0.1),  # coil sweep, one beat, finishing on the blower cut
+        (16.351, air(0.32, 'outCubic', 340, 1800, width=0.6, pan=(0.15, -0.15)), D(-34), 0.1),  # cut to the two dirty blowers
         (18.298, wipe(), D(-28), 0.14),  # brand wipe into the evidence scene
         (22.337 - 0.45, swell(0.45, 300, 1400), D(-34), 0.2),  # grows into the statement
         (22.900, mallet([783.99], decay=0.09), D(-28), 0.25),  # "AUTOMATIC ANSWER." turns red on the build (G5 over C)
         (25.086, bloom(), D(-25), 0.45),  # under the final hit: the cut to the end card
-        (25.086, air(0.5, 'inOutCubic', 600, 1800, sweep='down', width=0.6, pan=(-0.4, -0.1)), D(-37), 0.15),  # badge travels
+        (25.086, air(0.5, 'outCubic', 600, 1800, sweep='down', width=0.6, pan=(-0.4, -0.1)), D(-37), 0.15),  # badge travels (out-cubic, with the picture)
         (25.632, mallet([783.99]), D(-23), 0.3),  # end card checks G5 -> C6 (over the final C chord)
         (25.904, mallet([1046.50]), D(-24), 0.3),
-        (26.177, air(0.38, 'outQuart', 400, 1800, width=0.7, pan=(-0.4, 0.2)), D(-37), 0.1),  # button reveals
+        (26.177, air(0.24, 'outCubic', 400, 1800, width=0.7, pan=(-0.4, 0.2)), D(-37), 0.1),  # button settles in, whole
     ]
 
 

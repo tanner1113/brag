@@ -2,15 +2,15 @@
   "name": "dickerson-hvac-restoration-v2",
   "private": true,
   "type": "module",
-  "description": "Dickerson Services, HVAC System Restoration v2: one timeline, three native formats (dickerson-motion skill).",
+  "description": "Dickerson Services, HVAC System Restoration v3: one timeline, three native formats (dickerson-motion skill).",
   "scripts": {
     "prep": "python prep-assets.py",
     "audio": "python build-audio.py",
     "lint": "node render.mjs --lint",
     "test": "node --test test/layout.test.mjs",
     "check": "node render.mjs --check-determinism --format all",
-    "stills": "node render.mjs --stills 0,4.3,8.6,16.5,20,23.8,28 --format all",
-    "render": "node render.mjs --format all --audio work/audio/mix.wav --slug dickerson-hvac-restoration --version 2",
+    "stills": "node render.mjs --stills 0,2.70,4.4,8.8,11.0,13.8,15.8,17.4,20.5,24.3,25.12,26.22,28.5 --format all",
+    "render": "node render.mjs --format all --audio work/audio/mix.wav --slug dickerson-hvac-restoration --version 3",
     "contact": "node contact-sheet.mjs",
     "serve": "node render.mjs --serve"
   },

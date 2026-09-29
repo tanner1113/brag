@@ -1,6 +1,6 @@
 // One frame per scene from the final vertical render, labeled with its window and photo.
 //
-//   node contact-sheet.mjs   ->  out/contact_sheet_9x16_v2.png
+//   node contact-sheet.mjs   ->  out/dickerson-hvac-restoration_9x16_v3_contact_sheet.png
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,20 +9,21 @@ import puppeteer from 'puppeteer-core';
 import { DURATION, T } from './composition/timing.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const video = path.join(here, 'out', 'dickerson-hvac-restoration_9x16_1080x1920_v2.mp4');
+const video = path.join(here, 'out', 'dickerson-hvac-restoration_9x16_1080x1920_v3.mp4');
 const dir = path.join(here, 'work', 'contact');
 const CHROME = process.env.CHROME || '/usr/bin/google-chrome-stable';
 
 // [id, name, start, end, still time, photo]. Before/after scenes are caught mid-reveal.
 const SCENES = [
   ['1', 'Hook', 0, T.swipe, 2.2, 'Photo 11, overgrown packaged unit'],
-  ['2', 'You may have a third option', T.swipe, T.paths, 4.45, 'Photo 08, condenser coil, sweep'],
-  ['3', 'Repair / System Restoration / Replacement', T.paths, T.s4a, 7.0, 'Photo 08 after, darkened'],
+  ['2', 'You may have a third option', T.swipe, T.paths, 4.4, 'Photos 19 to 20, outdoor unit wash'],
+  ['3', 'Repair / System Restoration / Replacement', T.paths, T.s4a, 7.0, 'Photo 20, washed outdoor unit'],
   ['4a', 'More than a basic tune-up', T.s4a, T.s4b, 8.8, 'Photo 04, indoor coil, sweep'],
-  ['4b', 'May include: deep cleaning', T.s4b, T.s4c, 10.98, 'Photo 09, condenser panel, top-down sweep'],
+  ['4b', 'May include: deep cleaning', T.s4b, T.s4c, 11.0, 'Photos 17 to 18, condenser interior'],
   ['4c', 'May include: age-related parts', T.s4c, T.s4d, 13.8, 'Photo 06, air handler drain, split'],
-  ['4d', 'May include: checks, photos, report', T.s4d, T.s5a, 16.5, 'Photo 07, coil surface, sweep'],
-  ['5a', 'Evidence before recommendation', T.s5a, T.s5b, 21.0, 'Photos 08, 04 and 09, before'],
+  ['4d', 'May include: checks, photos, report', T.s4d, T.blowers, 15.8, 'Photo 07, coil surface, sweep'],
+  ['4e', 'Blower evidence', T.blowers, T.s5a, 17.4, 'Photos 22 and 21, dirty blowers, no labels'],
+  ['5a', 'Evidence before recommendation', T.s5a, T.s5b, 21.0, 'Photos 19, 22 and 04, before'],
   ['5b', 'Not the automatic answer', T.s5b, T.end, 24.3, 'Evidence grid, darkened'],
   ['6', 'End card: $85 Aging HVAC Evaluation', T.end, DURATION, 28.5, 'Logo, offer, phone and URL'],
 ];
@@ -67,14 +68,14 @@ h1 span { color: #d51e30; }
   display: flex; flex-direction: column; gap: 22px; font-size: 21px; line-height: 1.35; color: #cfcfcf; }
 .legend b { display: block; color: #fafafa; font-size: 23px; font-weight: 800; margin-bottom: 2px; }
 </style></head><body><div id="sheet">
-<header><h1>Dickerson Services <span>/</span> HVAC System Restoration v2</h1>
+<header><h1>Dickerson Services <span>/</span> HVAC System Restoration v3</h1>
 <div class="meta">${DURATION}s vertical, 1080x1920, 30fps. One frame per scene; before/after scenes mid-reveal.</div></header>
 <div class="grid">${tiles}
   <div class="legend">
     <div><b>Formats</b>One timeline, rendered natively at 1080x1920, 1080x1080 and 1920x1080. H.264 + AAC, about -14 LUFS.</div>
     <div><b>Music</b>Happy Beats / Business Moves vol. 12, spliced on measured downbeats so the end card lands on the final hit</div>
     <div><b>Only price on screen</b>$85</div>
-    <div><b>Photos</b>Real Dickerson jobs, central ducted equipment only: 04, 06, 07, 08, 09, 11. Photos 01 to 03 excluded; 06 cropped clear of the line set.</div>
+    <div><b>Photos</b>Real Dickerson jobs, central ducted equipment only: 04, 06, 07, 11, 17, 18, 19, 20, 21, 22. Outdoor unit, blower and coil. 06 cropped clear of the line set. 22 cropped clear of the blurry wires. 23 is a different job and is not shown.</div>
   </div>
 </div></div></body></html>`;
 fs.writeFileSync(path.join(dir, 'sheet.html'), html);
@@ -92,7 +93,7 @@ await page.evaluate(async () => {
   await document.fonts.ready;
   await Promise.all([...document.images].map((i) => i.decode()));
 });
-const out = path.join(here, 'out', 'contact_sheet_9x16_v2.png');
+const out = path.join(here, 'out', 'dickerson-hvac-restoration_9x16_v3_contact_sheet.png');
 await (await page.$('#sheet')).screenshot({ path: out });
 await browser.close();
 console.log(out);
