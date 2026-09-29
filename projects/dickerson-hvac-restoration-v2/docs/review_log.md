@@ -385,3 +385,72 @@ Worst three problems, worst first:
 Verdict: ANOTHER ROUND (scores pass; the flagship round minimum is 3, and vertical and square are not there yet)
 
 **Fixed this round:** the top-to-bottom fade now finishes at 56% of the photo height, at the start of the feather, instead of a few pixels above the text block.
+
+## Round 3 · Sep 29, 2026 · self-graded
+
+Re-rendered all three formats after the earlier fade. Graded the round-3 contact sheets, strips, phone sheets, probes and loop seams, plus full frames of the vertical wipe at 10.70, 10.85 and 11.05 s. Scores are self-graded: no separate reviewer was available.
+
+### vertical (9x16)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 8 | 8 | 8 | 8 |
+
+Evidence for the 8s:
+- **Hook:** frame 0 is settled. The whole hook is on screen in 104 px type over the overgrown unit, and the badge is already in the header band.
+- **Phone readability:** at 360 px the hook, the paths, the checklist, the thesis and the end-card number all read. The number is the full "BOOK 256-203-6612".
+- **Motion quality:** at 10.70 and 10.85 s BEFORE and AFTER sit in the middle of the interior photo, clear of MAY INCLUDE. By 11.03 s they are gone, and the 11.10 s strip shows no label on the kicker. The push is moving at 2.700. The button at 26.200 shows the whole number, not a clipped one. The logo is traveling by the first end-card frames.
+- **Variety:** the 2 fps sheet changes every scene. The evidence tiles push under a settled sentence for under 4 s. No reveal runs three times in a row.
+- **Brand accuracy:** the header band stays clear until 25.086 s (badge check peak 49, limit 110). The outdoor crop has no disconnect and no conduit. The blower tiles are dirty wheels with no BEFORE/AFTER. The evidence grid is outdoor unit, blower and coil. "$85" is the only price. 06's line set stays outside its window.
+- **Sound sync:** −14.1 LUFS, peak −1.6 dBFS, last 50 ms silent. The end card cuts in on the final hit.
+
+Worst three problems, worst first:
+1. **[00:04.20]** A departing label is one letter at the frame edge while it rides off with the divider. **Fix:** none. That is the designed exit. **Re-render:** none.
+2. **[00:10.33–00:11.64]** The interior before and after are different angles. The brief allows the wipe, and the leaves versus the pan still read. **Fix:** none. **Re-render:** none.
+3. **[00:16.35–00:18.53]** The checklist line "Before-and-after photos" holds over two unlabeled dirty wheels. **Fix:** none. It stays a service item. **Re-render:** none.
+
+Verdict: SHIP
+
+### square (1x1)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 8 | 8 | 8 | 8 |
+
+Evidence for the 8s: the 11.10 s strip matches vertical. AFTER is in the upper half of the photo at 10.97–11.00 s and gone before it meets MAY INCLUDE. The outdoor crop has no disconnect. The blower two-up is two dirty wheels. Badge check peak 41. Loudness matches vertical.
+
+Worst three problems, worst first:
+1. **[00:04.20]** A label letter rides off the left edge with the divider. **Fix:** none. **Re-render:** none.
+2. **[00:10.33–00:11.64]** The interior angle change, as vertical. **Fix:** none. **Re-render:** none.
+3. **[00:16.35–00:18.53]** The checklist holds over the dirty wheels. **Fix:** none. **Re-render:** none.
+
+Verdict: SHIP
+
+### landscape (16x9)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 8 | 8 | 8 | 8 |
+
+Evidence for the 8s: the 11.10 s strip keeps BEFORE and AFTER inside the photo, clear of the text column, for the whole wipe. The stacked blower tiles and the evidence stack (outdoor unit, blower, coil) read at full size, and the 360-px end card shows the full number. Badge check peak 44. Loudness matches vertical.
+
+Worst three problems, worst first:
+1. **[00:10.33–00:11.64]** The interior angle change, as vertical. The labels never meet the type. **Fix:** none. **Re-render:** none.
+2. **[00:16.35–00:18.53]** The checklist holds beside the dirty wheels. **Fix:** none. **Re-render:** none.
+3. **[00:04.20]** The outdoor-unit labels ride with the divider and stay off the text column. **Fix:** none. **Re-render:** none.
+
+Verdict: SHIP
+
+**Checked on the delivered files:** `npm test` (27 checks) and lint pass. Determinism: the vertical frame at 18.056 s matches after seeking away and back. `check-badge.py` passes in all three (peaks 49, 41, 44; limit 110). All three files are H.264 High, yuv420p, BT.709, 30 fps, AAC 48 kHz stereo, 29.6 s, −14.1 LUFS and −1.6 dBTP.
+
+## Final scores (v3)
+
+Self-graded. A separate reviewer was not available.
+
+| Format | Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync | Verdict |
+|---|---|---|---|---|---|---|---|
+| vertical (1080×1920) | 8 | 8 | 8 | 8 | 8 | 8 | SHIP |
+| square (1080×1080) | 8 | 8 | 8 | 8 | 8 | 8 | SHIP |
+| landscape (1920×1080) | 8 | 8 | 8 | 8 | 8 | 8 | SHIP |
+
+Three rounds. Round 1 caught the disconnect in the outdoor crop, the blower framed on its housing, and the wipe label on the kicker. Round 2 cleared the first two and moved the fade earlier. Round 3 ships.
