@@ -11,6 +11,7 @@
     "check": "node render.mjs --check-determinism --format all",
     "stills": "node render.mjs --stills 0,4.3,8.6,16.5,20,23.8,28 --format all",
     "render": "node render.mjs --format all --audio work/audio/mix.wav --slug dickerson-hvac-restoration --version 2",
+    "contact": "node contact-sheet.mjs",
     "serve": "node render.mjs --serve"
   },
   "dependencies": {
