@@ -1,0 +1,5 @@
+# Client photos, logos and brief come from restoration-assets.tar.gz (see prep-assets.sh).
+# This repo is public, so they stay out of git, and so do the renders made from them.
+composition/assets/
+brag-output/
+node_modules/

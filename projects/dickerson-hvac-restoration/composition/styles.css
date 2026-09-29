@@ -1,0 +1,139 @@
+@font-face {
+  font-family: "Noto Sans VF";
+  src: url("fonts/NotoSans-VF.ttf") format("truetype");
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+}
+
+:root {
+  --bg: #111111;
+  --red: #ab1525;
+  --red-hi: #d51e30;
+  --white: #fafafa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 1080px;
+  height: 1920px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+#stage {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: "Noto Sans VF", "Noto Sans", sans-serif;
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.layer, .abs { position: absolute; left: 0; top: 0; }
+.layer { width: 1080px; height: 1920px; }
+
+/* Photo viewports: feathered into the background like the brand's ads. */
+.vp { position: absolute; left: 0; width: 1080px; overflow: hidden; }
+.vp-layer { position: absolute; left: 0; top: 0; width: 1080px; height: 100%; overflow: hidden; }
+.cam { position: absolute; transform-origin: 50% 50%; will-change: transform; }
+.cam img { display: block; width: 100%; height: 100%; }
+
+.divider {
+  position: absolute; top: 0; width: 6px; height: 100%;
+  margin-left: -3px; background: var(--white);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
+}
+.handle {
+  position: absolute; width: 76px; height: 76px; margin: -38px 0 0 -38px;
+  border-radius: 50%; background: var(--red); border: 5px solid var(--white);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.handle svg { width: 40px; height: 40px; }
+
+.tag {
+  position: absolute; padding: 12px 20px 11px;
+  font-weight: 700; font-size: 26px; letter-spacing: 0.2em; line-height: 1;
+  color: var(--white); border-radius: 6px;
+}
+.tag.before { background: rgba(17, 17, 17, 0.78); }
+.tag.after { background: var(--red); }
+
+/* Headlines: heavy, condensed, uppercase (the ads' look, in Noto Sans). */
+.hl { position: absolute; font-weight: 900; font-stretch: 75%; text-transform: uppercase; }
+.hl .ln, .say .ln { display: block; overflow: hidden; white-space: nowrap; }
+.hl .in, .say .in { display: inline-block; will-change: transform; }
+.red { color: var(--red-hi); }
+
+/* Voice lines: sentence case, calmer. */
+.say { position: absolute; font-weight: 800; font-stretch: 87.5%; }
+
+/* Eyebrow labels are the S3 path rows at 0.4x, so a row can morph into one exactly. */
+.eyebrow {
+  position: absolute; background: var(--red); color: var(--white);
+  font-weight: 800; font-stretch: 75%; font-size: 34px; letter-spacing: 0.06em; line-height: 1;
+  padding: 15px 22px 14px; text-transform: uppercase; white-space: nowrap;
+}
+
+.path {
+  position: absolute; left: 90px; width: 900px; height: 150px;
+  border: 3px solid rgba(250, 250, 250, 0.42); border-radius: 18px;
+  background: rgba(17, 17, 17, 0.62);
+  transform-origin: 0 0;
+}
+.path .fill { position: absolute; inset: -3px; border-radius: 18px; background: var(--red); }
+.path .lbl {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-stretch: 75%; font-size: 76px; letter-spacing: 0.06em; line-height: 1;
+  text-transform: uppercase; white-space: nowrap;
+}
+
+.check {
+  position: absolute; display: flex; align-items: center; gap: 26px; white-space: nowrap;
+}
+.check .box {
+  flex: none; width: 62px; height: 62px; border-radius: 10px; background: var(--red);
+  display: flex; align-items: center; justify-content: center;
+}
+.check .box svg { width: 42px; height: 42px; }
+.check .txt { font-weight: 800; font-stretch: 75%; text-transform: uppercase; font-size: 66px; line-height: 1; }
+.check.soft .box { width: 54px; height: 54px; border-radius: 9px; }
+.check.soft .box svg { width: 36px; height: 36px; }
+.check.soft .txt { font-weight: 600; font-stretch: 100%; text-transform: none; font-size: 54px; }
+
+#header { position: absolute; left: 0; top: 0; width: 1080px; height: 300px; }
+#header img { position: absolute; left: 90px; top: 150px; width: 232px; }
+#header .loc {
+  position: absolute; right: 90px; top: 188px; background: var(--red);
+  font-weight: 700; font-size: 25px; letter-spacing: 0.1em; line-height: 1;
+  padding: 11px 18px 10px;
+}
+
+.shade { position: absolute; left: 0; width: 1080px; pointer-events: none; }
+
+.reticle { position: absolute; }
+.reticle i { position: absolute; width: 64px; height: 64px; border: 0 solid var(--red-hi); }
+.reticle i:nth-child(1) { left: 0; top: 0; border-left-width: 7px; border-top-width: 7px; }
+.reticle i:nth-child(2) { right: 0; top: 0; border-right-width: 7px; border-top-width: 7px; }
+.reticle i:nth-child(3) { left: 0; bottom: 0; border-left-width: 7px; border-bottom-width: 7px; }
+.reticle i:nth-child(4) { right: 0; bottom: 0; border-right-width: 7px; border-bottom-width: 7px; }
+
+.price { position: absolute; font-weight: 900; font-stretch: 100%; line-height: 0.9; letter-spacing: -0.02em; }
+.rule { position: absolute; height: 8px; background: var(--red); }
+
+.cta {
+  position: absolute; left: 90px; width: 900px; height: 128px; border-radius: 14px;
+  background: var(--red); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-stretch: 75%; font-size: 66px; letter-spacing: 0.02em;
+  text-transform: uppercase; white-space: nowrap;
+}
+.center-text { position: absolute; left: 0; width: 1080px; text-align: center; white-space: nowrap; }
+
+#wipebar { position: absolute; top: 0; width: 30px; height: 1920px; background: var(--red); margin-left: -15px; }
+
+#guides { position: absolute; inset: 0; pointer-events: none; }
+#guides div { position: absolute; left: 0; width: 1080px; border-top: 3px dashed; border-bottom: 3px dashed; }
