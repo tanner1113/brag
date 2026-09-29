@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { FORMATS, cover, layout, lerpBox, tiles } from '../composition/layout.js';
+import { fadeBefore } from '../composition/motion.js';
 import { DURATION, FPS, SWEEP_4D, T, pushP, travel, wipeSpan } from '../composition/timing.js';
 
 const inside = (b, r) => b.x >= r.x && b.y >= r.y && b.x + b.w <= r.x + r.w && b.y + b.h <= r.y + r.h;
@@ -98,6 +99,14 @@ test('the push and the end-card logo move on the first frame', () => {
   assert.ok(travel(T.travel + frame) > 0.04, 'logo travel is still eased in');
   assert.equal(pushP(T.swipe), 0);
   assert.equal(travel(T.end - frame), 0);
+});
+
+test('a top-to-bottom label is gone before it reaches the text block', () => {
+  // Vertical: text starts 710 px into the photo; the limit sits 12 px above that.
+  const limit = 710 - 12;
+  assert.equal(fadeBefore(600, limit, 1), 1);
+  assert.equal(fadeBefore(limit, limit, 1), 0);
+  assert.ok(Math.abs(fadeBefore(limit - 14, limit, 0.8) - 0.4) < 1e-9);
 });
 
 test('the coil sweep finishes on the blower cut', () => {

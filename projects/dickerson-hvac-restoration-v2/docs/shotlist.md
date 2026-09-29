@@ -54,10 +54,10 @@ The whole photo was checked first. Crop windows are in `prep-assets.py`, and eve
 | 14, 15, 16 | Crawlspace encapsulation and ducts | pass | pass | not used: a different service (16 also has a black pipe that could be misread and printed numbers) |
 | 17 | Looking down into an outdoor condenser: compressor in wet leaves | pass: ducted condenser interior. Internal compressor piping is the unit, not a line set to a wall head | pass | 4b before, with 18 |
 | 18 | Same condenser after the debris was cleaned out | pass, same reason. Framing differs from 17 (the addendum); the wipe compares the pan, it does not pretend the angle matches | pass | 4b after |
-| 19 | Packaged outdoor unit, dull cabinet, before the wash | pass as cropped: the shuttered window, the disconnect and the pad line-set stub are outside the window (x 300–1060, y 370–950) | pass | 2 before; outdoor before in the 5a grid |
+| 19 | Packaged outdoor unit, dull cabinet, before the wash | pass as cropped: the shuttered window, the disconnect and its conduit, and the pad line-set stub are outside the window (x 300–780, y 400–940) | pass | 2 before; outdoor before in the 5a grid |
 | 20 | Same unit after the cabinet was washed | pass, same window as 19 | pass | 2 after; darkened behind the three paths |
 | 21 | Close-up of a dirty centrifugal blower wheel | pass as cropped: foliage and a red edge on the right stay outside the window | pass | 4e, beside 22. Not a pair with 23 |
-| 22 | Dirty blower wheel in an air-handler cabinet | pass as cropped: the blurry wires at the lower left (about x<280 and y>1040) are outside the window | pass | 4e, and the blower tile in the 5a grid |
+| 22 | Dirty blower wheel in an air-handler cabinet | pass as cropped: the window sits on the wheel (x 340–1040, y 460–1020). The blurry wires (about x<280 and y>1040) stay outside it. The motor shaft at the lower left is part of the blower | pass | 4e, and the blower tile in the 5a grid |
 | 23 | Clean centrifugal blower wheel | pass | pass | **not used.** It is a different job from 21 and 22. Putting it next to them, or cutting to it from them, would read as that wheel's after. There is no other window long enough for a standalone close-up without dropping a required line |
 
 **Used:** 04, 06, 07, 11, 17, 18, 19, 20, 21, 22. All come from this bundle. Nothing outside the bundle was added.

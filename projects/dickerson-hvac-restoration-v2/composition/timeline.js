@@ -4,7 +4,7 @@
 // timing.js, and every scene change sits on a measured beat from work/beats.json.
 // Preview: /composition/index.html?format=square&t=4.2 (add &guides=1 to outline the layout boxes).
 import { cover, layout, lerpBox, tiles } from './layout.js';
-import { clamp, ease, lerp, noise, progress } from './motion.js';
+import { clamp, ease, fadeBefore, lerp, noise, progress } from './motion.js';
 import { BUTTON, DURATION, FPS, PRE, PUSH, SPLIT, SWEEP, SWEEP_4D, T, pushP, travel, wipeSpan } from './timing.js';
 
 const params = new URLSearchParams(location.search);
@@ -105,13 +105,23 @@ function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1
   place(dim, inner);
   const f = Array.isArray(focus) ? focus : focus[FORMAT];
   const extent = (tag) => (axis === 'x' ? tag.offsetWidth : tag.offsetHeight);
+  // Vertical and square feather the photo under the text. A top-to-bottom label that
+  // follows the divider into that zone sits on the kicker. Landscape text is beside the photo.
+  const textOnPhoto =
+    L.text.x < L.photo.x + L.photo.w &&
+    L.photo.x < L.text.x + L.text.w &&
+    L.text.y < L.photo.y + BH &&
+    L.photo.y < L.text.y + L.text.h;
+  const labelLimit = L.text.y - L.photo.y - 12;
 
   // A label rides `ahead` of the divider at d (on the far-edge side) or behind it.
   function ride(tag, d, ahead, opacity) {
     const at = ahead ? d + GAP : d - GAP - extent(tag);
     if (axis === 'x') Object.assign(tag.style, { left: px(at), top: px(BH * L.label.at) });
     else Object.assign(tag.style, { left: px(BW * L.label.x - tag.offsetWidth / 2), top: px(at) });
-    tag.style.opacity = String(opacity);
+    let op = opacity;
+    if (axis === 'y' && textOnPhoto) op = fadeBefore(at + extent(tag), labelLimit, opacity);
+    tag.style.opacity = String(op);
   }
 
   return (t, { on, t0, t1, move = null, dimAmt = 0, dx = 0 }) => {
@@ -330,13 +340,13 @@ const layers = {
   // Two dirty blower wheels from the evidence, side by side (stacked in landscape). No divider
   // and no BEFORE/AFTER: they are not a pair, and 23 (a clean wheel from another job) is not here.
   blowers: gridLayer([
-    { name: '22_blower', focus: [0.42, 0.68] },
+    { name: '22_blower', focus: [0.46, 0.62] },
     { name: '21_blower', focus: [0.62, 0.48] },
   ], { seed: 17, z1: 1.06 }),
   // Before shots of the three parts: outdoor unit, blower, coil.
   s5: gridLayer([
     { name: '19_before', focus: [0.5, 0.4] },
-    { name: '22_blower', focus: [0.42, 0.68] },
+    { name: '22_blower', focus: [0.46, 0.62] },
     { name: '04_before', focus: [0.45, 0.5] },
   ]),
 };

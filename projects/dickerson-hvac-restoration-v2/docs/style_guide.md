@@ -1,7 +1,7 @@
 # Style guide: Dickerson Services, HVAC System Restoration, v3
 
 **Status:** APPROVED with the shot list. The v3 job brief (Sep 29, 2026) is the approval: build from the v2 timeline, show the outdoor unit, the blower and the coil, and fix the three timing notes from v2's round 4.
-**Reference:** none supplied. This keeps the v2 grammar. **Revision:** 5 (v3 photos, the blower two-up, and the three ease fixes)
+**Reference:** none supplied. This keeps the v2 grammar. **Revision:** 6 (tighter 19/20 and 22 windows, and the top-to-bottom labels fade before the text)
 
 ## Kept from v2
 
@@ -21,7 +21,8 @@
 | 4d's coil sweep is one beat (15.260–16.351), then a hard cut to two dirty blower wheels (21 and 22) | The blower has to be on screen. The checklist copy holds across the cut |
 | The evidence grid is outdoor unit (19), blower (22) and coil (04), all before shots | One glance at the three parts. 08 and 09 left the grid |
 | 21/22 are a two-up with no divider and no BEFORE/AFTER labels. 23 is not in the piece | 23 is a clean wheel from a different job. A wipe or a label would claim it is the after |
-| 22's window excludes the blurry wires at the lower left. 19/20's window excludes the pad line-set stub, the disconnect and the shuttered window | Banned imagery and the addendum's crop note, checked on the whole window |
+| 22's window is the wheel itself and excludes the blurry wires at the lower left. 19/20's window excludes the pad line-set stub, the disconnect, its conduit and the shuttered window | Banned imagery and the addendum's crop note, checked on the whole window |
+| On a top-to-bottom sweep, BEFORE and AFTER fade out before they enter the text block (vertical and square) | A label that followed the divider into the feather sat on the kicker |
 | The push into scene 2 and the badge's travel into the end card ease out-cubic | Both used to sit still for the first frames (in-out cubic) |
 | The Book button settles a few pixels with no clip | A left-to-right clip drew half the phone number for about five frames |
 
@@ -60,7 +61,7 @@ One bar (2.18 s at 109.98 BPM) per idea. The hook gets 1.25 bars, the two statem
 | Push | 0.42 s, out-cubic | Hook → third option (2.69 s) | Moves on the first frame. The hook photo and its text slide out left as the new photo and text slide in from the right. The photo is clipped to its band; the text runs out at the frame edges (in landscape, from the text column's inner edge to the right frame edge) |
 | Text cut | 0 | Into the three paths (5.445 s) and the 5b statement (22.337 s), on the beat | The old block holds until the beat; the new one rises from it |
 | Hard cut | 0 | 4a, 4b, 4c, 4d on downbeats, the blower two-up on the 16.351 downbeat, and the end card on the final hit (25.086 s) | Picture and text change together, except the blower cut, which keeps the checklist and changes only the photo |
-| Before/after sweep | 1.3 s (1.091 s in 4d), in-out sine | 2, 4a and 4d left to right; 4b top to bottom; each starts on a beat | The divider starts and ends off the frame: BEFORE rides in ahead of it and AFTER follows it out. No fades. 4d's sweep ends on the blower cut |
+| Before/after sweep | 1.3 s (1.091 s in 4d), in-out sine | 2, 4a and 4d left to right; 4b top to bottom; each starts on a beat | The divider starts and ends off the frame: BEFORE rides in ahead of it and AFTER follows it out. On the top-to-bottom sweep in vertical and square, each label fades out across 28 px before its box reaches the text block, so it never sits on the kicker. 4d's sweep ends on the blower cut |
 | Before/after split | 0.8 s, out-cubic | 4c (12.52 s) | The AFTER half slides in, moving from its first frame and landing softly, and BEFORE slides over until they sit side by side (vertical, square) or stacked (landscape) |
 | Blower two-up | none | 4e (16.351 s) | Two dirty wheels in the evidence-grid layout. No divider, no labels, no wipe |
 | Row to kicker | 0.42 s, in-out cubic | Three paths → 4a | The red "SYSTEM RESTORATION" line shrinks and rises into the kicker slot, easing width 75→100%, weight 900→700 and tracking until it's exactly the kicker's box; the kicker replaces it on the cut |

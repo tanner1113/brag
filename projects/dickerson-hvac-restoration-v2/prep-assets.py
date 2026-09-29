@@ -62,12 +62,12 @@ SINGLES = {
     # (and the badge), and y<=575 stops above the BEFORE label (y>=585) while keeping the unit's
     # rim, its matted coil and the weeds on the right.
     "11_before": ("11_", 450, 0, 990, 575, "open control box wiring, badge, BEFORE label"),
-    # 19 and 20 are separate files, near-identical framing of one packaged condenser. The shared
-    # window keeps the fan and the washed top and drops the shuttered window, the disconnect,
-    # and the line-set stub at the pad (lower left of the full frame).
-    "19_before": ("19_", 300, 370, 760, 580,
-                  "shuttered window, electrical disconnect, pad line-set stub"),
-    "20_after": ("20_", 300, 370, 760, 580, "same window as 19"),
+    # 19 and 20 are separate files, near-identical framing of one packaged condenser (1080x1440).
+    # The disconnect and its conduit are at about x>=820, the shuttered window is above y=380,
+    # and the pad line-set stub is below the cabinet. The window stops at x=780 and y=940.
+    "19_before": ("19_", 300, 400, 480, 540,
+                  "shuttered window, electrical disconnect and conduit, pad line-set stub"),
+    "20_after": ("20_", 300, 400, 480, 540, "same window as 19"),
     # 17 (1440x1080) and 18 (1080x1440) are the same condenser, top off, different angle.
     # Internal compressor piping stays: it is the inside of the outdoor unit, not a line set
     # run to a wall head.
@@ -76,7 +76,8 @@ SINGLES = {
     # Dirty blower close-up. The right edge is outdoor foliage and a red surface; both stay out.
     "21_blower": ("21_", 0, 20, 1180, 1040, "foliage and the red edge at the right"),
     # Dirty blower in the cabinet. The blurry wires occupy about x<280 and y>1040.
-    "22_blower": ("22_", 300, 160, 760, 860, "blurry wires at the lower left"),
+    # The window sits on the wheel itself: the earlier window was mostly housing above it.
+    "22_blower": ("22_", 340, 460, 700, 560, "blurry wires at the lower left; housing above the wheel"),
     # Clean blower from a different job than 21/22. Cropped for a close-up only.
     "23_blower": ("23_", 80, 180, 960, 1120, "clean wheel; not a match for 21 or 22"),
 }
@@ -139,6 +140,10 @@ def main() -> int:
     bx, by, bw, bh = SINGLES["22_blower"][1:5]
     if bx < 280 or by + bh > 1040:
         sys.exit("prep-assets: photo 22 window includes the blurry wires at the lower left")
+    # 19/20: the disconnect and conduit start near x=820 on the 1080-wide source.
+    ox, oy, ow, oh = SINGLES["19_before"][1:5]
+    if ox + ow > 800 or oy < 380 or oy + oh > 960:
+        sys.exit("prep-assets: photo 19/20 window includes the disconnect, the conduit, or the pad")
 
     for pid, (prefix, (bx, by), (ax, ay), w, h, _why) in PAIRS.items():
         src = source(prefix)

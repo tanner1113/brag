@@ -15,6 +15,10 @@ export const ease = {
 // Eased 0-1 progress of a move that starts at `start` and lasts `dur` seconds.
 export const progress = (t, start, dur, e = ease.outCubic) => e(clamp((t - start) / dur));
 
+// Fade a riding label out before its box crosses `limit` (the text block, in photo space).
+// Full opacity while the box is `span` px clear of the limit; gone once it reaches the limit.
+export const fadeBefore = (bottom, limit, opacity, span = 28) => opacity * clamp((limit - bottom) / span);
+
 // Seeded random numbers (mulberry32): the same seed gives the same sequence on every render.
 export function rng(seed) {
   let a = seed | 0;

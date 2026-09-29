@@ -273,3 +273,64 @@ Verdict: SHIP
 | landscape (1920×1080) | 8 | 8 | 8 | 8 | 8 | 8 | SHIP |
 
 Four rounds: round 1 and rounds 3–4 graded by the author, round 2 by a fresh reviewer.
+
+# Review log: Dickerson Services, HVAC System Restoration, v3
+
+**The bar:** every score 8 or more, in every format. **Flagship:** yes (lead-gen ad for paid distribution), so at least 3 rounds.
+**Grader:** `skills/dickerson-motion/prompts/harsh-director.md` · **Images:** `review/<video-name>/round-<n>/` from `scripts/critique.sh` (not committed; they contain client photos)
+
+Rounds are self-graded. A separate reviewer was not available for v3 (the v2 fresh-reviewer subagent was already blocked by a model usage limit, and this pass graded from the round images directly).
+
+## Round 1 · Sep 29, 2026 · first v3 render
+
+Graded from the round-1 contact sheets, strips, phone sheets, probe and loop seam in all three formats, plus full-resolution frames of the vertical file at 0.00, 2.70, 4.20, 9.00, 10.50, 11.10, 12.70, 16.40, 19.50, 25.15 and 26.20 s. The three v2 timing notes are fixed on this render: the push is moving at 2.700, the logo is moving and turning silver by 25.15, and the button at 26.20 shows the whole number "BOOK 256-203-6612".
+
+### vertical (9x16)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 7 | 8 |
+
+Evidence for the 8s: frame 0 is settled, the hook is fully set in 104 px type over the overgrown unit, and the badge is in the header band. At 360 px the hook, the three paths, the checklist, the thesis and the end-card number all read. The longest hold with nothing new is the evidence sentence over the pushing tiles (about 18.8–22.3 s). Reveals are a left-to-right sweep, a top-to-bottom sweep, a split, then a two-up, so no move runs three times in a row. Audio is −14.1 LUFS, peak −1.6 dBFS, and the last 50 ms is silent.
+
+Worst three problems, worst first:
+1. **[00:03.78–00:07.62 and 00:18.53–00:25.09]** The outdoor-unit window still contains the electrical disconnect and its conduit. At 4.20 s the conduit is on the right of the washed cabinet, and the same window is the left tile of the evidence grid. **Fix:** stop the shared 19/20 window at x=780 and y=940 so the disconnect, the conduit, the shuttered window and the pad line-set stub are outside every format's crop. **Re-render:** 2.7–7.7 s and 18.5–25.1 s.
+2. **[00:10.90–00:11.40]** On the top-to-bottom wipe, BEFORE rides down into the photo's feather and sits on the MAY INCLUDE kicker (frame at 11.10 s). **Fix:** fade each y-axis label out before its box reaches the text block. The divider keeps moving. **Re-render:** 10.3–11.7 s.
+3. **[00:16.35–00:18.53 and 00:18.53–00:25.09]** Photo 22 is framed on the housing, so the dirty wheel is stuck at the bottom of the left blower panel and the evidence tile reads as a shelf. **Fix:** recrop 22 onto the wheel (x 340–1040, y 460–1020), still clear of the blurry wires. **Re-render:** 16.3–25.1 s.
+
+Verdict: ANOTHER ROUND
+
+### square (1x1)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 7 | 8 |
+
+Evidence for the 8s: same settled frame 0, with an 84 px hook. The phone sheets read through the end card, including the full number. Variety and sound match vertical.
+
+Worst three problems, worst first:
+1. **[00:03.78–00:07.62 and 00:18.53–00:25.09]** The square cover uses the full width of the 19/20 window, so the disconnect and conduit are in frame on the outdoor unit and again in the evidence grid. **Fix:** as vertical. **Re-render:** 2.7–7.7 s and 18.5–25.1 s.
+2. **[00:10.90–00:11.40]** BEFORE meets the kicker on the top-to-bottom wipe, as vertical. **Fix:** as vertical. **Re-render:** 10.3–11.7 s.
+3. **[00:16.35–00:18.53]** The left blower panel is housing, as vertical. **Fix:** as vertical. **Re-render:** 16.3–25.1 s.
+
+Verdict: ANOTHER ROUND
+
+### landscape (16x9)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 7 | 8 |
+
+Evidence for the 8s: frame 0 has the 120 px hook beside the overgrown unit. In the 360-px sheets the checklist, the thesis and the end-card number read. The push clips outgoing type at the text column's inner edge. The top-to-bottom labels stay in the photo, because the text column does not overlap it.
+
+Worst three problems, worst first:
+1. **[00:18.53–00:25.09]** The stacked evidence tile of 19 uses the full width of the window, so the disconnect's conduit can enter the top tile. **Fix:** as vertical. **Re-render:** 2.7–7.7 s and 18.5–25.1 s.
+2. **[00:16.35–00:18.53 and 00:18.53–00:25.09]** The 22 crop is mostly housing, and a short landscape tile crops the wheel off. **Fix:** as vertical. **Re-render:** 16.3–25.1 s.
+3. **[00:10.33–00:11.64]** The interior pair's angle change is allowed, and the labels do not hit the text column. No third fault at the bar. **Fix:** none beyond 1 and 2. **Re-render:** none.
+
+Verdict: ANOTHER ROUND
+
+**Fixed this round (all formats, one timeline):**
+- 19/20 window is now x 300–780, y 400–940. The disconnect, its conduit, the shuttered window and the pad line-set stub are outside the window, so no format can show them.
+- 22's window is the wheel (x 340–1040, y 460–1020). The blurry wires stay out. Focus is 0.46, 0.62.
+- A top-to-bottom label fades out across 28 px before it reaches a text block that overlaps the photo. Landscape is unchanged, because its text sits beside the photo.
