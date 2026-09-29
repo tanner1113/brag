@@ -22,7 +22,7 @@
 | The evidence grid is outdoor unit (19), blower (22) and coil (04), all before shots | One glance at the three parts. 08 and 09 left the grid |
 | 21/22 are a two-up with no divider and no BEFORE/AFTER labels. 23 is not in the piece | 23 is a clean wheel from a different job. A wipe or a label would claim it is the after |
 | 22's window is the wheel itself and excludes the blurry wires at the lower left. 19/20's window excludes the pad line-set stub, the disconnect, its conduit and the shuttered window | Banned imagery and the addendum's crop note, checked on the whole window |
-| On a top-to-bottom sweep, BEFORE and AFTER fade out before they enter the text block (vertical and square) | A label that followed the divider into the feather sat on the kicker |
+| On a top-to-bottom sweep, BEFORE and AFTER are gone by 56% of the photo height (vertical and square) | A label that followed the divider into the feather sat on the kicker |
 | The push into scene 2 and the badge's travel into the end card ease out-cubic | Both used to sit still for the first frames (in-out cubic) |
 | The Book button settles a few pixels with no clip | A left-to-right clip drew half the phone number for about five frames |
 
@@ -61,7 +61,7 @@ One bar (2.18 s at 109.98 BPM) per idea. The hook gets 1.25 bars, the two statem
 | Push | 0.42 s, out-cubic | Hook → third option (2.69 s) | Moves on the first frame. The hook photo and its text slide out left as the new photo and text slide in from the right. The photo is clipped to its band; the text runs out at the frame edges (in landscape, from the text column's inner edge to the right frame edge) |
 | Text cut | 0 | Into the three paths (5.445 s) and the 5b statement (22.337 s), on the beat | The old block holds until the beat; the new one rises from it |
 | Hard cut | 0 | 4a, 4b, 4c, 4d on downbeats, the blower two-up on the 16.351 downbeat, and the end card on the final hit (25.086 s) | Picture and text change together, except the blower cut, which keeps the checklist and changes only the photo |
-| Before/after sweep | 1.3 s (1.091 s in 4d), in-out sine | 2, 4a and 4d left to right; 4b top to bottom; each starts on a beat | The divider starts and ends off the frame: BEFORE rides in ahead of it and AFTER follows it out. On the top-to-bottom sweep in vertical and square, each label fades out across 28 px before its box reaches the text block, so it never sits on the kicker. 4d's sweep ends on the blower cut |
+| Before/after sweep | 1.3 s (1.091 s in 4d), in-out sine | 2, 4a and 4d left to right; 4b top to bottom; each starts on a beat | The divider starts and ends off the frame: BEFORE rides in ahead of it and AFTER follows it out. On the top-to-bottom sweep in vertical and square, each label fades out across 28 px and is gone by 56% of the photo height, clear of the feather and the kicker. 4d's sweep ends on the blower cut |
 | Before/after split | 0.8 s, out-cubic | 4c (12.52 s) | The AFTER half slides in, moving from its first frame and landing softly, and BEFORE slides over until they sit side by side (vertical, square) or stacked (landscape) |
 | Blower two-up | none | 4e (16.351 s) | Two dirty wheels in the evidence-grid layout. No divider, no labels, no wipe |
 | Row to kicker | 0.42 s, in-out cubic | Three paths → 4a | The red "SYSTEM RESTORATION" line shrinks and rises into the kicker slot, easing width 75→100%, weight 900→700 and tracking until it's exactly the kicker's box; the kicker replaces it on the cut |

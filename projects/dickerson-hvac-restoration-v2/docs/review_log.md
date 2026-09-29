@@ -334,3 +334,54 @@ Verdict: ANOTHER ROUND
 - 19/20 window is now x 300–780, y 400–940. The disconnect, its conduit, the shuttered window and the pad line-set stub are outside the window, so no format can show them.
 - 22's window is the wheel (x 340–1040, y 460–1020). The blurry wires stay out. Focus is 0.46, 0.62.
 - A top-to-bottom label fades out across 28 px before it reaches a text block that overlaps the photo. Landscape is unchanged, because its text sits beside the photo.
+
+## Round 2 · Sep 29, 2026 · self-graded
+
+Re-rendered all three formats. Badge check passes (header-band peaks 49, 41 and 44; limit 110). Graded the round-2 sheets and strips, plus full frames at 4.20, 11.05, 11.20, 16.50 and 19.50 s.
+
+### vertical (9x16)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 8 | 8 |
+
+Evidence for the 8s: frame 0 is unchanged and still settled. The outdoor unit at 4.20 s is the cabinet and the brick, with no disconnect and no conduit. The blower two-up at 16.50 s is two dirty wheels, unlabeled. The evidence grid at 19.50 s is the outdoor unit, the blower wheel and the coil. Audio is −14.1 LUFS, peak −1.6 dBFS, last 50 ms silent.
+
+Worst three problems, worst first:
+1. **[00:10.97–00:11.10]** BEFORE still reaches the feather and touches the top of MAY INCLUDE for about four frames (strip at 11.10 s). The fade finishes, but too late. **Fix:** finish the fade by 56% of the photo height, where the feather starts. **Re-render:** 10.3–11.7 s.
+2. **[00:04.20]** The departing AFTER chip is a single letter at the left edge while it rides off with the divider. That is the designed exit, and it does not sit on the type. **Fix:** none. **Re-render:** none.
+3. **[00:16.35–00:18.53]** The checklist line "Before-and-after photos" holds over two dirty wheels. They are unlabeled and both dirty, so the line stays a service item. **Fix:** none. **Re-render:** none.
+
+Verdict: ANOTHER ROUND
+
+### square (1x1)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 8 | 8 |
+
+Evidence for the 8s: the square outdoor crop at 4.20 s has no disconnect. The blower two-up at 16.50 s reads as two dirty wheels. Phone type matches the v2 sizes that already passed at 360 px.
+
+Worst three problems, worst first:
+1. **[00:10.97–00:11.20]** The same late fade: AFTER is still in the feather just above MAY INCLUDE at 11.20 s. **Fix:** as vertical. **Re-render:** 10.3–11.7 s.
+2. **[00:04.20]** A clipped AFTER letter at the left edge, riding out with the divider. **Fix:** none. **Re-render:** none.
+3. **[00:16.35–00:18.53]** The checklist holds over the dirty wheels, as vertical. **Fix:** none. **Re-render:** none.
+
+Verdict: ANOTHER ROUND
+
+### landscape (16x9)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 8 | 8 | 8 | 8 |
+
+Evidence for the 8s: at 4.20 s the cabinet crop has brick and no conduit, and BEFORE sits on the photo clear of the text column. At 16.50 s both blower tiles show the wheel. At 19.50 s the stack is outdoor unit, blower, coil, and the 120 px thesis reads. In the 360-px sheet the end card shows the full number "BOOK 256-203-6612". The text column does not overlap the photo, so the top-to-bottom labels never meet the kicker.
+
+Worst three problems, worst first:
+1. **[00:04.20]** BEFORE is fully drawn; the paired label is off the left edge with the divider, as designed. **Fix:** none. **Re-render:** none.
+2. **[00:10.33–00:11.64]** The interior pair's angle differs, which the brief allows. The pan reads as cleaned against the leaves. **Fix:** none. **Re-render:** none.
+3. **[00:16.35–00:18.53]** The checklist holds beside the dirty wheels. **Fix:** none. **Re-render:** none.
+
+Verdict: ANOTHER ROUND (scores pass; the flagship round minimum is 3, and vertical and square are not there yet)
+
+**Fixed this round:** the top-to-bottom fade now finishes at 56% of the photo height, at the start of the feather, instead of a few pixels above the text block.

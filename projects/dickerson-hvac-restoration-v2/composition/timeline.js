@@ -112,7 +112,9 @@ function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1
     L.photo.x < L.text.x + L.text.w &&
     L.text.y < L.photo.y + BH &&
     L.photo.y < L.text.y + L.text.h;
-  const labelLimit = L.text.y - L.photo.y - 12;
+  // Gone by the start of the bottom feather (the mask is solid until 58%). The text
+  // block lives in that feather, and a label that reaches it reads as sitting on the kicker.
+  const labelLimit = Math.min(BH * 0.56, L.text.y - L.photo.y - 80);
 
   // A label rides `ahead` of the divider at d (on the far-edge side) or behind it.
   function ride(tag, d, ahead, opacity) {
