@@ -1,7 +1,7 @@
 # Style guide: Dickerson Services, HVAC System Restoration, v2
 
 **Status:** APPROVED. The owner pre-approved the v1 script and this piece's constraints (job brief, Sep 28, 2026), so the gate in REFERENCE.md is treated as passed.
-**Reference:** none supplied. This uses the house grammar from `skills/dickerson-motion/RULES.md`, kept close to the v1 piece the owner approved. **Brief:** the job 2 request plus `ASSET_BRIEF.md` in the asset bundle. **Revision:** 3 (type sizes, reveals and transitions updated after critique rounds 1 and 2)
+**Reference:** none supplied. This uses the house grammar from `skills/dickerson-motion/RULES.md`, kept close to the v1 piece the owner approved. **Brief:** the job 2 request plus `ASSET_BRIEF.md` in the asset bundle. **Revision:** 4 (type sizes, reveals and transitions updated after critique rounds 1 and 2; push clipping, split easing and text on cuts after round 3)
 
 ## Borrowed from v1 (the approved grammar)
 
@@ -54,11 +54,11 @@ One bar (2.18 s at 109.98 BPM) per idea. The hook gets 1.25 bars, the two statem
 
 | Type | Duration | Where | Direction |
 |---|---|---|---|
-| Push | 0.42 s, in-out cubic | Hook → third option (2.69 s) | The hook photo and its text slide out left as the new photo and text slide in from the right, each clipped to its own region (photo band, text column) |
+| Push | 0.42 s, in-out cubic | Hook → third option (2.69 s) | The hook photo and its text slide out left as the new photo and text slide in from the right. The photo is clipped to its band; the text runs out at the frame edges (in landscape, from the text column's inner edge to the right frame edge), never at the column's own edges |
 | Text cut | 0 | Into the three paths (5.445 s) and the 5b statement (22.337 s), on the beat | The old block holds until the beat; the new one rises from it |
 | Hard cut | 0 | 4a, 4b, 4c, 4d on downbeats, and the end card on the final hit (25.086 s) | Picture and text change together; the new headline rises from the cut |
 | Before/after sweep | 1.3 s (1.4 s in 4d), in-out sine | 2, 4a and 4d left to right; 4b top to bottom; each starts on a beat | The divider starts and ends off the frame: BEFORE rides in ahead of it and AFTER follows it out. No fades. |
-| Before/after split | 0.8 s, in-out cubic | 4c (12.52 s) | The AFTER half slides in and BEFORE slides over until they sit side by side (vertical, square) or stacked (landscape), each centered on its own focal point |
+| Before/after split | 0.8 s, out-cubic | 4c (12.52 s) | The AFTER half slides in, moving from its first frame and landing softly, and BEFORE slides over until they sit side by side (vertical, square) or stacked (landscape), each centered on its own focal point |
 | Row to kicker | 0.42 s, in-out cubic | Three paths → 4a | The red "SYSTEM RESTORATION" line shrinks and rises into the kicker slot, easing width 75→100%, weight 900→700 and tracking until it's exactly the kicker's box; the kicker replaces it on the cut |
 | Brand wipe | 0.46 s, full cover at the midpoint | Into evidence (18.53 s) only | Red panel left to right, **content area only**: never the header band. Its trailing edge reveals the evidence tiles. |
 | Red flip | 0.3 s, out-cubic | "AUTOMATIC ANSWER." on the 22.9 s build downbeat | A red copy of the line wipes over the white one, left to right |
@@ -78,6 +78,7 @@ None beyond the photos. No grain, glow, particles, light leaks or vignettes (RUL
 ## Text in and out
 
 - **In:** lines and check rows slide up out of their masks, 0.42 s, out-quart, with 0.08 s between lines; tags reveal from the left.
+- **On a cut:** the new text starts rising 0.07 s before the cut and shows from the cut, so the first frame of the new scene already has it moving (a cut on action), never an empty text area.
 - **Out:** on the cut, beat or wipe that changes the scene. No beat lands on an empty text area.
 - **Settled time:** at least 0.3 s per word wherever the music allows. The two tightest lines are logged in the shot list's cadence check.
 

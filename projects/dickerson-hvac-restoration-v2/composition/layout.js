@@ -5,6 +5,8 @@
 // Every format reserves a header band that holds only the logo badge. Transitions (the photo
 // push, the brand wipe) are confined to `content`, below the band, so the badge is never
 // covered or cut; the badge also sits above every other layer.
+// `push` is where the scene 2 push clips its text: the frame edges, or in landscape the text
+// column's inner edge, so type never slides across the photo.
 // `split` is the axis the 4c before/after split runs along: side by side ('x') or stacked ('y');
 // `grid` lays out the 5a evidence tiles the same way. Both follow the photo band's feather, so
 // every half or tile fades alike.
@@ -28,6 +30,7 @@ const LAYOUTS = {
     content: box(0, 362, 1080, 1558),
     photo: { ...box(0, 372, 1080, 940), fade: 'bottom' },
     text: { ...box(90, 1082, 870, 418), anchor: 'top' },
+    push: { left: 0, right: 1080 },
     kicker: { size: 50, gap: 16 },
     headline: { size: 104, lineHeight: 1.0 },
     rows: { size: 100, gap: 14 },
@@ -52,6 +55,7 @@ const LAYOUTS = {
     content: box(0, 138, 1080, 942),
     photo: { ...box(0, 146, 1080, 600), fade: 'bottom' },
     text: { ...box(60, 664, 960, 366), anchor: 'top' },
+    push: { left: 0, right: 1080 },
     kicker: { size: 46, gap: 12 },
     headline: { size: 84, lineHeight: 1.0 },
     rows: { size: 86, gap: 12 },
@@ -77,6 +81,7 @@ const LAYOUTS = {
     content: box(0, 150, 1920, 930),
     photo: { ...box(0, 150, 860, 930), fade: 'right' },
     text: { ...box(900, 190, 924, 840), anchor: 'center' },
+    push: { left: 900, right: 1920 },
     kicker: { size: 76, gap: 22 },
     headline: { size: 120, lineHeight: 1.0 },
     rows: { size: 120, gap: 18 },

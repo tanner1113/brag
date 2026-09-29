@@ -17,6 +17,9 @@ export const T = {
   // (the track has no more attacks to measure).
   end: 25.086, travel: 25.086, checks: [25.632, 25.904], button: 26.177, url: 26.45,
 };
+// Text that arrives on a cut starts rising this much earlier and shows from the cut, so the first
+// frame after the cut already has it moving (a cut on action) instead of an empty text area.
+export const PRE = 0.07;
 export const SWEEP = 1.3;
 export const SWEEP_4D = 1.4;
 export const SPLIT = 0.8;

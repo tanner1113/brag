@@ -146,3 +146,59 @@ The author checked each claim against the round 2 images before acting on it.
 - Badge 250/190/200 px wide (was 220/170/180).
 
 **Re-rendered:** all three formats in full. `npm test` (24 checks) and lint pass. `check-badge.py`: header band untouched until the end card cut (25.086 s) in all three. Loudness −14.1 LUFS, true peak −1.6 dBTP.
+
+## Round 3 · Sep 29, 2026 · author
+
+The fresh-reviewer subagent could not be started this round (model usage limit), so the author graded it from the round 3 images.
+
+### vertical (9x16)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 8 | 8 |
+
+Evidence for the 8s: frame 0 is settled, with the hook in 104 px Display type over the overgrown unit, and the photo punches in on the 1.079 downbeat. At 360 px every must-read line reads; the smallest are the 50 px kickers and BEFORE/AFTER labels (about 17 px on the phone). The longest stretch with nothing new is 5a's settled text (19.3–22.3 s) while the tiles push in, and no reveal runs three times in a row. The badge holds the header band from 0.00 through the push and the brand wipe, "$85" appears only in the offer, there are no corner tags or brackets, and no tile shows banned equipment. Audio: −14.1 LUFS, −1.6 dBTP, last 50 ms silent, and each hard cut lands on the first frame after its measured downbeat.
+
+Worst three problems, worst first:
+1. **[00:07.63, 00:12.00, 00:14.20, 00:22.37, 00:25.10]** The first frame after a cut has an empty text area: the new photo is up but the headline only starts rising on the next frame, and at 25.10 the end card is black apart from the badge. **Fix:** text that arrives on a cut starts rising 0.07 s before it and shows from the cut, so the first frame already has the line moving. **Re-render:** all.
+2. **[00:02.77–00:03.00]** In the push, the hook's lines are cut off at the text block's left edge (x 90) and the new lines appear at its right edge (x 960) while the photo slides across the full frame, so the type seems to pass behind an invisible box. **Fix:** widen each line's mask to the frame edges for the push. **Re-render:** 2.6–3.2 s.
+3. **[00:12.52–00:12.75]** The 4c split starts on the beat but barely moves for its first 7 frames (in-out cubic), so the beat lands on a still frame and the AFTER half arrives late. **Fix:** out-cubic, so the half moves from its first frame and lands softly; the air cue follows the same curve. **Re-render:** 12.4–13.4 s.
+
+Verdict: ANOTHER ROUND
+
+### square (1x1)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 8 | 8 |
+
+Evidence for the 8s: as vertical, with an 84 px hook; the smallest must-read type is the 46 px kickers, labels and end card checks (about 15 px on the phone).
+
+Worst three problems, worst first:
+1. **[00:07.63, 00:12.00, 00:14.20, 00:22.37, 00:25.10]** An empty text area on the first frame after each cut, as in vertical (at 12.00 only the MAY INCLUDE tag is up). **Fix:** as vertical. **Re-render:** all.
+2. **[00:02.77–00:03.00]** The pushed lines are clipped at the text block's edges (x 60 and 1020), not the frame's. **Fix:** as vertical. **Re-render:** 2.6–3.2 s.
+3. **[00:12.52–00:12.75]** The split sits still for 7 frames after its beat. **Fix:** as vertical. **Re-render:** 12.4–13.4 s.
+
+Verdict: ANOTHER ROUND
+
+### landscape (16x9)
+
+| Hook | Phone readability | Motion quality | Variety | Brand accuracy | Sound sync |
+|---|---|---|---|---|---|
+| 8 | 8 | 7 | 8 | 8 | 8 |
+
+Evidence for the 8s: frame 0 has the hook settled beside the overgrown unit. In the 360-px test the checklist, the 5a sentence and the thesis (84 px, about 16 px on the phone) all read, and so do the end card checks, button and URL; the smallest must-read type is BEFORE/AFTER (64 px, 12 px on the phone), still legible in its chip. Brand and sound as vertical.
+
+Worst three problems, worst first:
+1. **[00:07.63, 00:12.00, 00:14.20, 00:22.37, 00:25.10]** An empty text column on the first frame after each cut; at 12.00 only the MAY INCLUDE tag sits beside the new photo. **Fix:** as vertical. **Re-render:** all.
+2. **[00:02.77–00:03.00]** The new lines appear at the text column's right edge (x 1824) instead of sliding in from the frame edge. **Fix:** the mask runs from the column's inner edge (x 900, so type never crosses the photo) to the right frame edge. **Re-render:** 2.6–3.2 s.
+3. **[00:12.52–00:12.75]** The stacked split sits still for 7 frames after its beat. **Fix:** as vertical. **Re-render:** 12.4–13.4 s.
+
+Verdict: ANOTHER ROUND
+
+**Fixed this round (one timeline, all formats):**
+- Text on a cut (4a, 4b, 4c, 4d, the three paths, 5b and the end card offer) starts rising 0.07 s before the cut and shows from the cut, so every cut is a cut on action. The 4a kicker still replaces the rising row exactly on the cut.
+- The push clips its text at the frame edges in vertical and square, and between the text column's inner edge and the right frame edge in landscape.
+- The 4c split eases out-cubic; its air cue uses the same curve.
+
+**Re-rendered:** all three formats in full. `npm test` (24 checks) and lint pass, and `npm run check` renders the same frame identically after seeking elsewhere and back. `check-badge.py`: header band untouched until 25.086 s in all three. Loudness −14.1 LUFS, true peak −1.8 dBTP.

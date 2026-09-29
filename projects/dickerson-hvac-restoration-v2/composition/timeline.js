@@ -5,7 +5,7 @@
 // Preview: /composition/index.html?format=square&t=4.2 (add &guides=1 to outline the layout boxes).
 import { cover, layout, lerpBox, tiles } from './layout.js';
 import { clamp, ease, lerp, noise, progress } from './motion.js';
-import { DURATION, FPS, PUSH, SPLIT, SWEEP, SWEEP_4D, T, travel, wipeSpan } from './timing.js';
+import { DURATION, FPS, PRE, PUSH, SPLIT, SWEEP, SWEEP_4D, T, travel, wipeSpan } from './timing.js';
 
 const params = new URLSearchParams(location.search);
 const FORMAT = params.get('format') || 'vertical';
@@ -128,8 +128,9 @@ function photoLayer({ before, after = null, focus = [0.5, 0.5], seed = 1, z1 = 1
       const sB = extent(pair.before);
       const sA = extent(pair.after);
       if (split) {
-        // The divider lands in the middle; each half slides so its own focal point ends centered.
-        d = lerp(len + GAP + sB + 6, len / 2, move ? progress(t, move.start, move.dur, ease.inOutCubic) : 0);
+        // The divider comes in fast and lands softly in the middle; each half slides so its own
+        // focal point ends centered.
+        d = lerp(len + GAP + sB + 6, len / 2, move ? progress(t, move.start, move.dur, ease.outCubic) : 0);
         shift = [-Math.max(0, len - d) / 2, d / 2];
       } else {
         d = lerp(-(GAP + sB + 6), len + GAP + sA + 6, move ? progress(t, move.start, move.dur, ease.inOutSine) : 0);
@@ -211,8 +212,15 @@ function textLines(cls, lines, size, lineHeight) {
       wrap.style.fontSize = px(fs);
       return api;
     },
-    at(x, y, w) {
+    // `bleed` widens each line's mask past the block on the left and right, so a sideways slide
+    // (the push into scene 2) is clipped there instead of at the block's own edges.
+    at(x, y, w, bleed = [0, 0]) {
       place(wrap, { x, y, w, h: api.height });
+      for (const s of spans) {
+        Object.assign(s.parentElement.style, {
+          marginLeft: px(-bleed[0]), paddingLeft: px(bleed[0]), marginRight: px(-bleed[1]), paddingRight: px(bleed[1]),
+        });
+      }
       return api;
     },
     // Lines rise in from tIn (0.08 s apart, or one time per line) and rise away from `out`. The
@@ -253,10 +261,10 @@ function kickerTag(text) {
     at(x, y) {
       Object.assign(tag.style, { left: px(x), top: px(y) });
     },
-    frame(t, tIn, hide = Infinity, instant = false) {
+    frame(t, tIn, { hide = Infinity, from = -Infinity, instant = false } = {}) {
       const pin = instant ? Number(t >= tIn) : progress(t, tIn, 0.25, ease.outCubic);
       tag.style.clipPath = `inset(0 ${((1 - pin) * 100).toFixed(2)}% 0 0)`;
-      show(tag, pin > 0 && t < hide);
+      show(tag, pin > 0 && t >= from && t < hide);
     },
   };
 }
@@ -296,13 +304,13 @@ function checkRows(items, spec) {
         yy += r.offsetHeight + (spec.gap ?? 14);
       }
     },
-    frame(t, starts, hide = Infinity) {
+    frame(t, starts, { hide = Infinity, from = -Infinity } = {}) {
       rows.forEach(({ r, inner, svg }, i) => {
         const p = progress(t, starts[i], 0.42, ease.outQuart);
         const k = progress(t, starts[i] + 0.16, 0.25, ease.outCubic);
         inner.style.transform = `translateY(${((1 - p) * 110).toFixed(2)}%)`;
         svg.style.transform = `scale(${k.toFixed(3)})`;
-        show(r, p > 0 && t < hide);
+        show(r, p > 0 && t >= from && t < hide);
       });
     },
   };
@@ -354,6 +362,7 @@ const paths = COPY.paths.map((label) => {
 });
 const pathGeo = { size: 0, rows: [], track: 0.08 };
 let kickerY = 0;
+let pushBleed = [0, 0];
 
 // End card.
 const offer = textLines('lines', COPY.offer, L.end.offer.size, 1.0);
@@ -383,8 +392,9 @@ function arrange() {
   const kickH = kA.height + L.kicker.gap;
 
   for (const h of [hook, third, h4a, h4b, h4c, evHead, statement]) h.fit(tw);
-  hook.at(L.text.x, anchorTop(hook.height), tw);
-  third.at(L.text.x, anchorTop(third.height), tw);
+  pushBleed = [L.text.x - L.push.left, L.push.right - (L.text.x + tw)];
+  hook.at(L.text.x, anchorTop(hook.height), tw, pushBleed);
+  third.at(L.text.x, anchorTop(third.height), tw, pushBleed);
   statement.at(L.text.x, anchorTop(statement.height), tw);
 
   // 4a-4d share one kicker slot, so the kicker never jumps between scenes.
@@ -437,7 +447,7 @@ function pathsFrame(t) {
   paths.forEach(({ r, fill }, i) => {
     show(r, on);
     if (!on) return;
-    const pin = progress(t, T.paths + i * 0.08, 0.42, ease.outQuart);
+    const pin = progress(t, T.paths - PRE + i * 0.08, 0.42, ease.outQuart);
     const { x, y } = pathGeo.rows[i];
     let clipL = 0;
     if (i === 1) {
@@ -484,8 +494,8 @@ function logoFrame(t) {
 }
 
 function endFrame(t) {
-  offer.frame(t, T.end, { from: T.end });
-  endChecks.frame(t, T.checks);
+  offer.frame(t, T.end - 0.1, { from: T.end });
+  endChecks.frame(t, T.checks, { from: T.end });
   const b = progress(t, T.button, 0.38, ease.outQuart);
   button.style.clipPath = `inset(0 ${((1 - b) * 100).toFixed(2)}% 0 0)`;
   button.style.transform = `translateX(${((1 - b) * -30).toFixed(2)}px)`;
@@ -511,18 +521,18 @@ function seek(t) {
 
   // The hook's text pushes out with its photo as scene 2 pushes in; after that, each text change
   // happens on the cut (or the beat) that changes the scene, so no beat lands on an empty frame.
-  hook.frame(t, -1, { hide: T.swipe + PUSH, dx: -push * tw });
-  third.frame(t, -1, { from: T.swipe, hide: T.paths, dx: (1 - push) * tw });
+  hook.frame(t, -1, { hide: T.swipe + PUSH, dx: -push * (tw + pushBleed[0]) });
+  third.frame(t, -1, { from: T.swipe, hide: T.paths, dx: (1 - push) * (tw + pushBleed[1]) });
   pathsFrame(t);
-  kA.frame(t, T.s4a, T.s4b, true);
-  h4a.frame(t, T.s4a, { hide: T.s4b });
-  kB.frame(t, T.s4b, T.s5a);
-  h4b.frame(t, T.s4b, { hide: T.s4c });
-  h4c.frame(t, T.s4c, { hide: T.s4d });
-  checklist.frame(t, T.rows4d, T.s5a);
+  kA.frame(t, T.s4a, { hide: T.s4b, instant: true });
+  h4a.frame(t, T.s4a - PRE, { from: T.s4a, hide: T.s4b });
+  kB.frame(t, T.s4b - PRE, { from: T.s4b, hide: T.s5a });
+  h4b.frame(t, T.s4b - PRE, { from: T.s4b, hide: T.s4c });
+  h4c.frame(t, T.s4c - PRE, { from: T.s4c, hide: T.s4d });
+  checklist.frame(t, [T.rows4d[0] - PRE, ...T.rows4d.slice(1)], { from: T.s4d, hide: T.s5a });
   evHead.frame(t, T.s5a + 0.06, { hide: T.s5b });
   evidence.frame(t, T.sentence5a, { hide: T.s5b });
-  statement.frame(t, [T.s5b, T.s5b + 0.08, T.half5b, T.half5b + 0.08], { hide: T.end });
+  statement.frame(t, [T.s5b - PRE, T.s5b - PRE + 0.08, T.half5b, T.half5b + 0.08], { from: T.s5b, hide: T.end });
   flip.style.clipPath = `inset(0 ${((1 - progress(t, T.flip5b, 0.3, ease.outCubic)) * 100).toFixed(2)}% 0 0)`;
 
   wipeFrame(t);

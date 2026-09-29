@@ -89,6 +89,8 @@ def ease(kind: str, u):
         return np.where(u < 0.5, 4 * u ** 3, 1 - (-2 * u + 2) ** 3 / 2)
     if kind == 'inOutSine':
         return (1 - np.cos(np.pi * u)) / 2
+    if kind == 'outCubic':
+        return 1 - (1 - u) ** 3
     if kind == 'outQuart':
         return 1 - (1 - u) ** 4
     raise ValueError(kind)
@@ -101,6 +103,8 @@ def speed(kind: str, u):
         return np.where(u < 0.5, 12 * u ** 2, 12 * (1 - u) ** 2) / 3
     if kind == 'inOutSine':
         return np.sin(np.pi * u)
+    if kind == 'outCubic':
+        return (1 - u) ** 2
     if kind == 'outQuart':
         return (1 - u) ** 3
     raise ValueError(kind)
@@ -240,7 +244,7 @@ def cue_sheet():
         (7.200, air(0.42, 'inOutCubic', 700, 2400, sweep='down', pan=(0.0, -0.3)), D(-34), 0.12),  # row rises into the kicker
         (8.156, sweep(1.3), D(-35), 0.1),
         (10.335, air(1.3, 'inOutSine', 280, 1500, sweep='down', width=0.6), D(-35), 0.1),  # top-to-bottom sweep, falling
-        (12.515, air(0.8, 'inOutCubic', 300, 1600, width=0.6, pan=(0.6, 0.05)), D(-35), 0.1),  # AFTER half slides in from the right
+        (12.515, air(0.8, 'outCubic', 300, 1600, width=0.6, pan=(0.6, 0.05)), D(-35), 0.1),  # AFTER half slides in from the right
         (14.169, mallet([523.25]), D(-24), 0.3),  # checklist rows tick C5 E5 G5 (C bar)
         (14.442, mallet([659.25]), D(-24), 0.3),
         (14.715, mallet([783.99]), D(-25), 0.3),
